@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Global Citizen · Nomad Trail</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--shell:#1A0E04;--shell2:#241508;--shell3:#2E1C0C;--cream:#F7F2EA;--cream2:#EDE6D8;--cream3:#E2D8C8;--gold:#C8901E;--gold2:#E8AC3A;--gold3:#F5C842;--goldfade:rgba(200,144,30,0.12);--goldline:rgba(200,144,30,0.25);--ink:#1A0E04;--ink2:#3D2408;--muted:#7A6040;--muted2:#A88B60;--lite:#F5EFE3;--lite2:rgba(245,239,227,0.60);--lite3:rgba(245,239,227,0.28);--red:#C0392B;--green:#1E8A45;--border:rgba(200,144,30,0.20);--border2:rgba(200,144,30,0.32);--bcard:rgba(200,144,30,0.16);--r:14px;--r2:10px;--shadow:0 2px 12px rgba(26,14,4,0.08);--shadow2:0 6px 28px rgba(26,14,4,0.15)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--ink);font-size:14px;line-height:1.55;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.screen{display:none}.screen.active{display:block}
+#screen-auth.active{display:flex}
+#screen-auth{min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;background:var(--shell);position:relative;overflow:hidden}
+#screen-auth::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(200,144,30,.13) 0%,transparent 55%),radial-gradient(ellipse at 75% 80%,rgba(200,144,30,.08) 0%,transparent 55%)}
+#screen-auth::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(200,144,30,.025) 0,rgba(200,144,30,.025) 1px,transparent 1px,transparent 32px)}
+.auth-float{font-size:56px;margin-bottom:14px;position:relative;z-index:1;animation:float 3.5s ease-in-out infinite;filter:drop-shadow(0 4px 18px rgba(200,144,30,.4))}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.auth-brand{font-size:10px;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:var(--gold2);margin-bottom:4px;position:relative;z-index:1}
+.auth-logo{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;color:var(--lite);letter-spacing:-1.5px;line-height:1;margin-bottom:6px;position:relative;z-index:1}
+.auth-logo span{color:var(--gold2)}.auth-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--lite3);margin-bottom:32px;position:relative;z-index:1}
+.auth-card{background:var(--cream);border-radius:20px;padding:24px 22px;width:100%;max-width:390px;box-shadow:0 24px 80px rgba(0,0,0,.6);position:relative;z-index:1}
+.auth-tabs{display:flex;background:var(--cream2);border-radius:10px;padding:3px;margin-bottom:20px}
+.auth-tab{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:8px;transition:all .2s}
+.auth-tab.active{background:var(--shell);color:var(--gold2);font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.28)}
+.form-group{margin-bottom:12px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.form-label{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px}
+.form-input{width:100%;padding:11px 13px;background:#fff;border:1.5px solid var(--cream3);border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+.form-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,144,30,.1)}.form-input::placeholder{color:var(--muted2)}
+select.form-input{cursor:pointer;background:#fff}
+.av-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}
+.av-opt{width:40px;height:40px;border-radius:50%;background:var(--cream2);border:2px solid var(--cream3);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:all .2s}
+.av-opt:hover{border-color:var(--gold2);transform:scale(1.08)}.av-opt.sel{border-color:var(--gold);background:#FFF8E6;box-shadow:0 0 0 3px rgba(200,144,30,.15)}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--shell),var(--shell3));color:var(--gold2);border:1px solid var(--goldline);border-radius:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:6px;letter-spacing:.3px;box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.32)}.btn-primary:active{transform:scale(.98)}
+.auth-demo{margin-top:14px;text-align:center;font-size:12px;color:var(--muted)}.auth-demo a{color:var(--gold);cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+#screen-app{min-height:100vh;padding-bottom:70px}
+.topbar{background:var(--shell);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:9px;position:sticky;top:0;z-index:50;box-shadow:0 2px 18px rgba(0,0,0,.35)}
+.topbar-brand{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--lite);letter-spacing:-.3px;flex-shrink:0}.topbar-brand span{color:var(--gold2)}
+.topbar-spacer{flex:1}
+.lang-sw{display:flex;background:var(--shell2);border:1px solid var(--border);border-radius:20px;padding:3px;flex-shrink:0}
+.lang-btn{padding:4px 9px;border-radius:16px;font-size:10px;font-weight:700;letter-spacing:.8px;cursor:pointer;color:var(--lite3);transition:all .18s;border:none;background:none;font-family:'Outfit',sans-serif}
+.lang-btn.active{background:var(--gold);color:var(--shell);box-shadow:0 1px 6px rgba(200,144,30,.4)}
+.top-xp{display:flex;align-items:center;gap:5px;background:var(--goldfade);border:1px solid var(--goldline);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:700;color:var(--gold2);flex-shrink:0}
+.top-bell{width:32px;height:32px;border-radius:50%;background:var(--shell2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;flex-shrink:0}
+.top-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));border:2px solid var(--gold2);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex-shrink:0;box-shadow:0 2px 10px rgba(200,144,30,.4);transition:transform .2s}
+.top-av:hover{transform:scale(1.08)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--shell);border-top:1px solid var(--border);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom,0)}
+.bnav-btn{flex:1;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--lite3);font-family:'Outfit',sans-serif;font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:color .2s}
+.bnav-btn .bni{font-size:19px;line-height:1}.bnav-btn.active{color:var(--gold2)}
+.tab-page{display:none;max-width:480px;margin:0 auto}.tab-page.active{display:block}
+#tab-map{padding:0}
+.map-hero{background:var(--shell);padding:14px 16px 12px;border-bottom:1px solid var(--border)}
+.map-label{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:var(--lite3);margin-bottom:3px;font-weight:600}
+.map-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--lite)}
+.map-svg-wrap{position:relative;width:100%;background:var(--shell)}.map-svg-wrap svg{width:100%;display:block}
+.city-pin-group{cursor:pointer}.city-pin-group.locked{cursor:default;opacity:.38}
+.city-pulse{animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{r:14;opacity:.15}50%{r:22;opacity:.06}}
+.city-list{padding:14px 16px;background:var(--cream)}
+.city-list-hdr{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:11px}
+.city-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#fff;border:1.5px solid var(--cream3);border-radius:var(--r);margin-bottom:8px;cursor:pointer;transition:all .22s;box-shadow:var(--shadow)}
+.city-row:hover{border-color:var(--gold2);box-shadow:var(--shadow2);transform:translateY(-1px)}
+.city-row.locked{opacity:.45;cursor:default}.city-row.locked:hover{transform:none;box-shadow:var(--shadow);border-color:var(--cream3)}
+.city-row.current{border-color:var(--gold);background:#FFFBF2}
+.cr-em{font-size:26px;flex-shrink:0}.cr-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--ink);line-height:1.15}
+.cr-country{font-size:11px;color:var(--muted2);margin-top:1px}.cr-info{flex:1;min-width:0}.cr-prog{margin-top:5px}
+.cr-bar{height:3px;background:var(--cream2);border-radius:6px;overflow:hidden;margin-bottom:2px}
+.cr-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:6px;transition:width .6s}
+.cr-txt{font-size:10px;color:var(--muted2)}.cr-badge{font-size:10px;font-weight:700;padding:4px 10px;border-radius:14px;white-space:nowrap;flex-shrink:0}
+.b-open{background:var(--goldfade);color:var(--gold);border:1px solid var(--bcard)}.b-lock{background:var(--cream2);color:var(--muted2);border:1px solid var(--cream3)}
+.b-done{background:#EEF8F2;color:var(--green);border:1px solid rgba(30,138,69,.22)}
+#tab-journey{padding:0;background:var(--cream)}
+.j-back{display:flex;align-items:center;gap:7px;color:var(--gold);font-weight:600;font-size:13px;cursor:pointer;padding:14px 16px 4px}
+.j-hero{background:linear-gradient(150deg,var(--shell) 0%,var(--shell3) 100%);border:1px solid var(--border2);border-radius:16px;padding:20px 18px;margin:10px 16px 16px;position:relative;overflow:hidden;box-shadow:var(--shadow2)}
+.j-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 85% 10%,rgba(200,144,30,.18) 0%,transparent 55%)}
+.j-em{font-size:32px;margin-bottom:8px;position:relative}.j-city-name{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--lite);letter-spacing:-.5px;margin-bottom:4px;position:relative}
+.j-xp-line{font-size:13px;color:var(--lite2);position:relative}.j-xp-line strong{color:var(--gold2);font-weight:700}
+.j-prog-wrap{margin-top:12px;position:relative}.j-prog-track{height:5px;background:rgba(245,239,227,.12);border-radius:10px;overflow:hidden}
+.j-prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold3));border-radius:10px;transition:width .8s ease}
+.j-prog-txt{font-size:11px;color:var(--lite3);margin-top:5px}
+.day-sec{padding:0 16px;margin-bottom:14px}.day-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.day-dot{width:30px;height:30px;border-radius:50%;background:var(--shell);border:2px solid var(--gold);color:var(--gold2);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 10px rgba(200,144,30,.25)}
+.day-dot.lk{background:var(--cream2);color:var(--muted2);border-color:var(--cream3);box-shadow:none}
+.day-ttl{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--ink)}.day-sub{font-size:11px;color:var(--muted2);margin-top:1px}
+.day-locked-bar{background:#fff;border:1.5px dashed var(--cream3);border-radius:var(--r);padding:13px 15px;display:flex;align-items:center;gap:10px;color:var(--muted2);font-size:13px}
+.ch-card{background:#fff;border:1.5px solid var(--cream3);border-radius:var(--r);padding:14px 15px;margin-bottom:9px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:all .22s;box-shadow:var(--shadow)}
+.ch-card:hover{border-color:var(--gold2);box-shadow:var(--shadow2);transform:translateY(-1px)}.ch-card.done{border-color:var(--goldline);background:#FFFBF2}
+.ch-card.done .ch-name{color:var(--muted)}
+.ch-ico-box{width:38px;height:38px;border-radius:10px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ch-card.done .ch-ico-box{background:var(--goldfade)}.ch-body{flex:1;min-width:0}
+.ch-name{font-weight:600;font-size:14px;color:var(--gold);line-height:1.3;margin-bottom:3px}.ch-desc{font-size:12px;color:var(--muted);line-height:1.55}
+.ch-rew{font-size:11px;color:var(--green);margin-top:4px;font-weight:600}.ch-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.ch-xp{font-size:11px;font-weight:700;color:var(--gold);background:var(--goldfade);border:1px solid var(--bcard);border-radius:10px;padding:3px 9px;white-space:nowrap}
+.ch-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--cream3);background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all .2s}
+.ch-card.done .ch-check{background:var(--shell);border-color:var(--gold);color:var(--gold2);font-size:10px}
+.ch-proof-badge{display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:10px;font-weight:600;color:var(--gold);background:var(--goldfade);border:1px solid var(--bcard);border-radius:8px;padding:2px 7px}
+.ch-proof-badge.private{color:var(--muted2);background:var(--cream2);border-color:var(--cream3)}
+.rew-banner{background:linear-gradient(135deg,var(--shell),var(--shell3));border:1px solid var(--goldline);border-radius:var(--r);padding:14px 16px;margin:10px 0;display:flex;align-items:center;gap:12px}
+.rb-em{font-size:26px}.rb-txt{flex:1}.rb-ttl{font-size:9px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1.5px}
+.rb-desc{font-size:13px;color:var(--lite2);margin-top:2px}.rb-xp{background:var(--goldfade);border:1px solid var(--goldline);border-radius:14px;padding:4px 11px;font-size:11px;font-weight:700;color:var(--gold2);white-space:nowrap}
+.sep{height:1px;background:var(--cream3);margin:14px 16px}
+.hacks-toggle{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1.5px solid var(--cream3);border-radius:var(--r);padding:14px 16px;cursor:pointer;margin:0 16px 8px;transition:border-color .2s;box-shadow:var(--shadow)}
+.hacks-toggle:hover{border-color:var(--gold2)}.ht-left{display:flex;align-items:center;gap:11px}.ht-icon{font-size:20px}
+.ht-title{font-size:14px;font-weight:600;color:var(--ink)}.ht-sub{font-size:11px;color:var(--muted2);margin-top:1px}
+.ht-arrow{font-size:11px;color:var(--muted2);transition:transform .25s}.ht-arrow.open{transform:rotate(180deg)}
+.hacks-body{display:none;background:var(--cream2);border:1.5px solid var(--cream3);border-top:none;border-radius:0 0 var(--r) var(--r);padding:12px 16px;margin:0 16px 8px}
+.hacks-body.open{display:block}.hb-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--cream3);align-items:flex-start}
+.hb-item:last-child{border-bottom:none}.hb-em{font-size:15px;flex-shrink:0;margin-top:2px}
+.hb-text{font-size:12px;color:var(--ink2);line-height:1.6}.hb-text strong{color:var(--gold);font-weight:700}
+#tab-feed{padding:0;background:var(--cream)}
+.feed-top{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--cream3)}
+.feed-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--ink)}
+.stories-row{display:flex;gap:14px;padding:12px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--cream3)}
+.stories-row::-webkit-scrollbar{display:none}.story-item{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;cursor:pointer}
+.story-ring{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));padding:2.5px}
+.story-ring.mine{background:linear-gradient(135deg,var(--shell),var(--gold))}.story-ring.seen{background:var(--cream3)}
+.story-inner{width:100%;height:100%;border-radius:50%;background:var(--cream2);border:2.5px solid var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px}
+.story-name{font-size:10px;color:var(--muted);font-weight:500;max-width:58px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.write-bar{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--cream3);background:#fff}
+.write-av{width:36px;height:36px;border-radius:50%;background:var(--shell);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.write-ph{flex:1;font-size:13px;color:var(--muted2);cursor:pointer}
+.write-btn{background:var(--shell);color:var(--gold2);border:1px solid var(--goldline);border-radius:9px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
+.post-card{border-bottom:1px solid var(--cream3);background:#fff}.post-hdr{display:flex;align-items:center;gap:11px;padding:12px 15px}
+.post-av{width:38px;height:38px;border-radius:50%;background:var(--shell);border:2px solid var(--cream2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.post-uname{font-weight:700;font-size:14px;color:var(--ink)}.post-lvl{font-size:9px;font-weight:700;color:var(--gold);background:var(--goldfade);border:1px solid var(--bcard);border-radius:8px;padding:2px 7px;display:inline-block;margin-left:5px}
+.post-loc{font-size:11px;color:var(--muted2);margin-top:1px}.post-more{margin-left:auto;color:var(--muted2);font-size:20px;cursor:pointer;padding:0 4px}
+.post-photo{width:100%;aspect-ratio:1/1;overflow:hidden;position:relative;background:var(--cream2)}
+.post-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.post-photo-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;background:linear-gradient(135deg,var(--cream2),var(--cream3))}
+.photo-city-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,14,4,.82));padding:34px 16px 14px;display:flex;align-items:flex-end;justify-content:space-between}
+.pcl-city{font-size:16px;font-weight:700;color:#fff;line-height:1.1}.pcl-country{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
+.pcl-ach{background:rgba(26,14,4,.6);backdrop-filter:blur(6px);border-radius:10px;padding:5px 10px;display:flex;align-items:center;gap:5px;border:1px solid rgba(200,144,30,.2)}
+.pcl-ach-ico{font-size:14px}.pcl-ach-xp{font-size:10px;font-weight:700;color:var(--gold2)}
+.post-actions{display:flex;align-items:center;padding:11px 15px;gap:15px}
+.pact-btn{background:none;border:none;cursor:pointer;font-size:22px;line-height:1;transition:transform .15s;padding:0}.pact-btn:active{transform:scale(1.25)}
+.pact-save{margin-left:auto}.post-likes{padding:0 15px;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.post-caption{padding:0 15px 7px}.post-caption-user{font-weight:700;font-size:13px;color:var(--ink);margin-right:5px}.post-caption-text{font-size:13px;color:var(--ink2)}
+.post-time-small{padding:0 15px 12px;font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px}
+#tab-profile{padding:0;background:var(--cream)}.prof-hdr{padding:18px 16px 14px;border-bottom:1px solid var(--cream3);background:#fff}
+.prof-top{display:flex;align-items:center;gap:18px;margin-bottom:16px}.prof-av-wrap{position:relative;flex-shrink:0}
+.prof-av{width:78px;height:78px;border-radius:50%;background:var(--shell);border:3px solid var(--gold2);display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 4px 20px rgba(200,144,30,.3)}
+.prof-lvl-dot{position:absolute;bottom:-3px;right:-3px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--shell);font-size:8px;font-weight:800;border-radius:9px;padding:3px 6px;border:2px solid #fff;letter-spacing:.4px}
+.prof-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.prof-handle{font-size:12px;color:var(--gold);font-weight:600;margin-top:1px}.prof-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.prof-bio{font-size:12px;color:var(--muted2);margin-top:4px}
+.prof-stats{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;border:1.5px solid var(--cream3);border-radius:var(--r);overflow:hidden;margin-bottom:14px;background:#fff}
+.pstat{padding:12px 8px;border-right:1px solid var(--cream3)}.pstat:last-child{border-right:none}
+.pstat-n{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--gold)}.pstat-l{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:1px}
+.xp-card{background:#fff;border:1.5px solid var(--cream3);border-radius:var(--r);padding:16px;margin:14px 16px;box-shadow:var(--shadow)}
+.xp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.xp-lbl{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px}
+.xp-v{font-size:11px;color:var(--muted2)}.xp-bar{height:8px;background:var(--cream2);border-radius:8px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold3));border-radius:8px;transition:width .8s ease}.xp-nxt{font-size:11px;color:var(--muted2);margin-top:6px}
+.countries-section{padding:0 16px 14px}.cs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-top:2px}
+.cs-title{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold)}.cs-count{font-size:11px;color:var(--muted2)}
+.countries-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.country-card{border-radius:12px;overflow:hidden;border:1.5px solid var(--cream3);background:#fff;transition:all .22s;cursor:default;box-shadow:var(--shadow)}
+.country-card.visited{border-color:var(--goldline);cursor:pointer}.country-card.visited:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
+.cc-flag-area{height:70px;display:flex;align-items:center;justify-content:center;font-size:34px;background:var(--cream2);position:relative}
+.country-card.visited .cc-flag-area{background:linear-gradient(135deg,#FFF8E6,var(--cream2))}
+.cc-vis-tag{position:absolute;top:6px;right:6px;background:var(--gold);color:var(--shell);font-size:8px;font-weight:800;border-radius:6px;padding:2px 5px}
+.cc-lock{position:absolute;bottom:6px;right:6px;font-size:12px;opacity:.3}.cc-info{padding:8px 9px}
+.cc-name{font-size:11px;font-weight:700;color:var(--ink)}.cc-cities{font-size:10px;color:var(--muted2);margin-top:2px}
+.cc-prog{height:2px;background:var(--cream2);border-radius:2px;margin-top:6px;overflow:hidden}.cc-prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px}
+.grid-tabs{display:flex;border-top:1px solid var(--cream3);border-bottom:1px solid var(--cream3)}
+.grid-tab{flex:1;padding:11px;text-align:center;font-size:18px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;color:var(--muted2)}.grid-tab.active{border-bottom-color:var(--gold);color:var(--gold)}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.photo-cell{aspect-ratio:1/1;background:var(--cream2);overflow:hidden;position:relative;cursor:pointer}
+.photo-cell img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}.photo-cell:hover img{transform:scale(1.06)}
+.photo-cell-label{position:absolute;bottom:0;left:0;right:0;padding:18px 6px 5px;background:linear-gradient(transparent,rgba(26,14,4,.72));font-size:9px;font-weight:700;color:#fff}
+.photo-cell-lock{position:absolute;top:5px;right:5px;font-size:12px;background:rgba(26,14,4,.55);border-radius:5px;padding:2px 4px}
+#tab-tips{padding:0;background:var(--cream)}.tips-hero{background:var(--shell);border-bottom:1px solid var(--border);padding:16px 18px 0;position:relative;overflow:hidden}
+.tips-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(200,144,30,.03) 0,rgba(200,144,30,.03) 1px,transparent 1px,transparent 22px)}
+.tips-hero-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--lite3);margin-bottom:4px;position:relative}
+.tips-hero-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--lite);position:relative;margin-bottom:12px}
+.city-tabs{display:flex;overflow-x:auto;scrollbar-width:none;position:relative}.city-tabs::-webkit-scrollbar{display:none}
+.city-tab-btn{flex-shrink:0;padding:10px 15px;background:transparent;border:none;border-bottom:3px solid transparent;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--lite3);cursor:pointer;transition:all .2s;white-space:nowrap}
+.city-tab-btn.active{color:var(--gold2);border-bottom-color:var(--gold2)}.tips-body{padding:14px 16px 20px}
+.tips-section{background:#fff;border:1.5px solid var(--cream3);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.tips-sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;transition:background .15s}
+.tips-sec-hdr:hover{background:var(--cream2)}.tsh-left{display:flex;align-items:center;gap:11px}.tsh-em{font-size:20px}
+.tsh-title{font-weight:600;font-size:14px;color:var(--ink)}.tsh-count{font-size:11px;color:var(--muted2);margin-top:1px}
+.tsh-arrow{font-size:11px;color:var(--muted2);transition:transform .25s}.tsh-arrow.open{transform:rotate(180deg)}
+.tips-sec-body{display:none;border-top:1px solid var(--cream3);padding:12px 15px}.tips-sec-body.open{display:block}
+.hack-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--cream3);align-items:flex-start}.hack-item:last-child{border-bottom:none}
+.hi-num{width:22px;height:22px;border-radius:50%;background:var(--goldfade);border:1px solid var(--bcard);color:var(--gold);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.hi-title{font-weight:600;font-size:13px;color:var(--ink);margin-bottom:2px}.hi-text{font-size:12px;color:var(--muted);line-height:1.6}
+.food-card{padding:11px 0;border-bottom:1px solid var(--cream3);display:flex;gap:11px;align-items:flex-start}.food-card:last-child{border-bottom:none}
+.fc-em{font-size:22px;flex-shrink:0;margin-top:1px}.fc-name{font-weight:600;font-size:13px;color:var(--ink)}.fc-price{font-size:11px;color:var(--gold);font-weight:600;margin-top:1px}
+.fc-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-top:3px}
+.fc-tag{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:8px;margin-top:4px;background:var(--cream2);color:var(--muted);border:1px solid var(--cream3)}
+.city-coming-soon{text-align:center;padding:48px 20px}.ccs-em{font-size:50px;margin-bottom:14px}
+.ccs-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--ink);margin-bottom:8px}.ccs-text{font-size:13px;color:var(--muted);line-height:1.65}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(26,14,4,.65);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+.modal-ov.open{display:flex}
+.modal-sh{background:var(--cream);border-radius:22px 22px 0 0;padding:22px 20px 36px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;animation:slideUp .24s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--cream3);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.55}
+.tip-row{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--cream3);font-size:13px;color:var(--muted);line-height:1.55}.tip-row:last-child{border-bottom:none}
+.tip-icon{color:var(--gold);flex-shrink:0}
+.btn-secondary{width:100%;padding:12px;background:transparent;color:var(--muted);border:1.5px solid var(--cream3);border-radius:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px}
+.btn-secondary:hover{border-color:var(--red);color:var(--red)}
+.proof-photo-area{width:100%;aspect-ratio:4/3;background:var(--cream2);border-radius:14px;overflow:hidden;margin-bottom:14px;position:relative;cursor:pointer;border:2px dashed var(--cream3);transition:border-color .2s;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
+.proof-photo-area:hover{border-color:var(--gold2)}.proof-photo-hint{font-size:34px}.proof-photo-txt{font-size:13px;color:var(--muted2);font-weight:500}
+.proof-photo-change{position:absolute;top:9px;right:9px;background:rgba(26,14,4,.6);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;display:none}
+.vis-toggle{display:flex;gap:8px;margin-bottom:14px}
+.vis-opt{flex:1;padding:10px 8px;border:2px solid var(--cream3);border-radius:12px;background:#fff;cursor:pointer;text-align:center;transition:all .2s}
+.vis-opt.sel{border-color:var(--gold);background:#FFFBF2}.vis-opt-ico{font-size:20px;margin-bottom:4px}
+.vis-opt-ttl{font-size:12px;font-weight:700;color:var(--ink)}.vis-opt-sub{font-size:10px;color:var(--muted2);margin-top:1px}.vis-opt.sel .vis-opt-ttl{color:var(--gold)}
+.compose-photo-area{width:100%;aspect-ratio:4/3;background:var(--cream2);border-radius:14px;overflow:hidden;margin-bottom:14px;position:relative;cursor:pointer;border:2px dashed var(--cream3);transition:border-color .2s;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
+.compose-photo-area:hover{border-color:var(--gold2)}.compose-photo-hint{font-size:34px}.compose-photo-txt{font-size:13px;color:var(--muted2);font-weight:500}
+.compose-photo-change{position:absolute;top:9px;right:9px;background:rgba(26,14,4,.6);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;display:none}
+.compose-label-preview{position:absolute;bottom:0;left:0;right:0;padding:30px 14px 12px;background:linear-gradient(transparent,rgba(26,14,4,.8))}
+.clp-city{font-size:16px;font-weight:700;color:#fff}.clp-country{font-size:11px;color:rgba(255,255,255,.6)}
+.city-suggestions{background:#fff;border:1.5px solid var(--cream3);border-radius:10px;overflow:hidden;margin-top:5px;display:none;box-shadow:var(--shadow2)}
+.city-sugg-item{padding:10px 13px;cursor:pointer;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--cream3);transition:background .15s;font-size:13px}
+.city-sugg-item:last-child{border-bottom:none}.city-sugg-item:hover{background:var(--cream2)}.city-sugg-em{font-size:16px}
+.city-sugg-name{font-weight:600;color:var(--ink)}.city-sugg-country{font-size:11px;color:var(--muted2)}
+.cel-ov{display:none;position:fixed;inset:0;z-index:300;pointer-events:none;background:rgba(26,14,4,.7);backdrop-filter:blur(8px)}
+.cel-ov.show{display:flex;align-items:center;justify-content:center}
+.cel-box{background:var(--shell);border:1px solid var(--goldline);border-radius:22px;padding:30px 28px 26px;text-align:center;max-width:280px;pointer-events:all;animation:popIn .32s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 24px 60px rgba(0,0,0,.8)}
+@keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.cel-em{font-size:54px;display:block;margin-bottom:12px}.cel-ttl{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--gold2);margin-bottom:8px}
+.cel-txt{font-size:13px;color:var(--lite2);line-height:1.6;white-space:pre-line}
+.cel-close{margin-top:20px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--shell);border:none;border-radius:14px;padding:12px 28px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(200,144,30,.5)}
+.country-modal-flag{font-size:50px;text-align:center;margin-bottom:10px}
+.country-city-item{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--cream3)}.country-city-item:last-child{border-bottom:none}
+.cci-photo{width:48px;height:48px;border-radius:10px;background:var(--cream2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
+.cci-name{flex:1;font-weight:600;font-size:14px;color:var(--ink)}.cci-date{font-size:11px;color:var(--muted2);margin-top:2px}.cci-xp{font-size:12px;color:var(--gold);font-weight:700}
+textarea{width:100%;padding:11px 13px;background:#fff;border:1.5px solid var(--cream3);border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--ink);outline:none;resize:vertical;line-height:1.6;transition:border-color .2s;margin-bottom:12px}
+textarea:focus{border-color:var(--gold)}textarea::placeholder{color:var(--muted2)}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--cream3);border-radius:2px}
+.search-bar-wrap{padding:10px 16px;background:var(--cream);border-bottom:1px solid var(--cream3)}
+.search-bar{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--cream3);border-radius:12px;padding:9px 13px;transition:border-color .2s}
+.search-bar:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,144,30,.08)}
+.search-bar span{font-size:15px;flex-shrink:0;opacity:.5}
+.search-bar input{flex:1;border:none;outline:none;font-family:'Outfit',sans-serif;font-size:14px;color:var(--ink);background:transparent}
+.search-bar input::placeholder{color:var(--muted2)}
+.search-no-results{padding:32px 16px;text-align:center;font-size:13px;color:var(--muted2)}
+</style>
+</head>
+<body>
+<div id="screen-auth" class="screen active">
+  <div class="auth-float">🏔️</div>
+  <div class="auth-brand">Nomad Trail</div>
+  <div class="auth-logo">Global <span>Citizen</span></div>
+  <div class="auth-sub">Central Asia · Discover the world</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="atab-in" onclick="switchAuthTab('in')">Sign In</div>
+      <div class="auth-tab" id="atab-up" onclick="switchAuthTab('up')">Create</div>
+    </div>
+    <div id="aform-in">
+      <div class="form-group"><label class="form-label">Nickname</label><input class="form-input" id="in-nick" type="text" placeholder="@your_nickname" autocomplete="off" autocorrect="off" autocapitalize="off"></div>
+      <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="in-name" type="text" placeholder="Your name"></div>
+      <div class="form-group"><label class="form-label">Avatar</label>
+        <div class="av-row" id="in-av">
+          <div class="av-opt sel" data-av="🧕" onclick="pickAv('in',this)">🧕</div>
+          <div class="av-opt" data-av="🧑‍🌏" onclick="pickAv('in',this)">🧑‍🌏</div>
+          <div class="av-opt" data-av="👩‍🦰" onclick="pickAv('in',this)">👩‍🦰</div>
+          <div class="av-opt" data-av="🧔" onclick="pickAv('in',this)">🧔</div>
+          <div class="av-opt" data-av="👩" onclick="pickAv('in',this)">👩</div>
+          <div class="av-opt" data-av="🧑" onclick="pickAv('in',this)">🧑</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Start Journey →</button>
+      <div class="auth-demo">or <a onclick="demoLogin()">continue as demo</a></div>
+    </div>
+    <div id="aform-up" style="display:none">
+      <div class="form-group"><label class="form-label">Nickname</label><input class="form-input" id="up-nick" type="text" placeholder="@your_nickname" autocomplete="off" autocorrect="off" autocapitalize="off"></div>
+      <div class="form-row">
+        <div class="form-group" style="margin:0"><label class="form-label">First Name</label><input class="form-input" id="up-fname" type="text" placeholder="First name"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Last Name</label><input class="form-input" id="up-lname" type="text" placeholder="Last name"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Country</label>
+        <select class="form-input" id="up-country">
+          <option value="">— select country —</option>
+          <option>🇰🇬 Kyrgyzstan</option><option>🇰🇿 Kazakhstan</option>
+          <option>🇺🇿 Uzbekistan</option><option>🇹🇯 Tajikistan</option>
+          <option>🇹🇲 Turkmenistan</option><option>🇷🇺 Russia</option>
+          <option>🇩🇪 Germany</option><option>🌍 Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Avatar</label>
+        <div class="av-row" id="up-av">
+          <div class="av-opt sel" data-av="🧕" onclick="pickAv('up',this)">🧕</div>
+          <div class="av-opt" data-av="🧑‍🌏" onclick="pickAv('up',this)">🧑‍🌏</div>
+          <div class="av-opt" data-av="👩‍🦰" onclick="pickAv('up',this)">👩‍🦰</div>
+          <div class="av-opt" data-av="🧔" onclick="pickAv('up',this)">🧔</div>
+          <div class="av-opt" data-av="👩" onclick="pickAv('up',this)">👩</div>
+          <div class="av-opt" data-av="🧑" onclick="pickAv('up',this)">🧑</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="doRegister()">Create Profile →</button>
+    </div>
+  </div>
+</div>
+<div id="screen-app" class="screen">
+  <div class="topbar">
+    <div class="topbar-brand">Global <span>Citizen</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="lang-sw">
+      <button class="lang-btn" id="lang-ru" onclick="setLang('ru')">РУ</button>
+      <button class="lang-btn active" id="lang-en" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="top-xp" id="top-xp">⚡ 0 XP</div>
+    <div class="top-bell">🔔</div>
+    <div class="top-av" id="top-av" onclick="goTab('profile')">🧕</div>
+  </div>
+  <div id="tab-map" class="tab-page active">
+    <div class="map-hero"><div class="map-label">Travel Map</div><div class="map-title">Central Asia</div></div>
+    <div class="map-svg-wrap">
+      <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <radialGradient id="lk" cx="50%" cy="50%"><stop offset="0%" stop-color="#22A74F" stop-opacity=".45"/><stop offset="100%" stop-color="#1A6B35" stop-opacity=".18"/></radialGradient>
+        </defs>
+        <rect width="400" height="280" fill="#1A0E04"/>
+        <circle cx="50" cy="40" r="70" fill="rgba(200,144,30,.04)"/>
+        <circle cx="350" cy="240" r="90" fill="rgba(200,144,30,.03)"/>
+        <path d="M20,20 L220,15 L230,30 L240,50 L210,70 L180,80 L150,75 L120,85 L90,80 L60,90 L30,85 Z" fill="rgba(200,144,30,.08)" stroke="rgba(200,144,30,.18)" stroke-width=".8"/>
+        <path d="M195,95 L240,88 L260,95 L265,115 L250,130 L220,135 L200,125 L190,110 Z" fill="rgba(200,144,30,.14)" stroke="rgba(200,144,30,.28)" stroke-width=".8"/>
+        <path d="M220,135 L265,130 L275,150 L260,165 L235,160 L215,150 Z" fill="rgba(200,144,30,.1)" stroke="rgba(200,144,30,.18)" stroke-width=".8"/>
+        <path d="M130,110 L195,100 L200,125 L185,145 L155,150 L130,140 L115,125 Z" fill="rgba(200,144,30,.1)" stroke="rgba(200,144,30,.18)" stroke-width=".8"/>
+        <path d="M80,145 L130,140 L150,155 L145,185 L110,195 L75,180 L65,160 Z" fill="rgba(200,144,30,.08)" stroke="rgba(200,144,30,.18)" stroke-width=".8"/>
+        <path d="M155,160 L215,155 L225,185 L200,205 L155,200 L140,185 Z" fill="rgba(100,70,40,.1)" stroke="rgba(200,144,30,.08)" stroke-width=".6"/>
+        <ellipse cx="232" cy="108" rx="22" ry="9" fill="url(#lk)" opacity=".9"/>
+        <text x="232" y="111" text-anchor="middle" font-size="4.5" fill="rgba(34,167,79,.5)" font-family="sans-serif">Issyk-Kul</text>
+        <text x="120" y="55" text-anchor="middle" font-size="6.5" fill="rgba(245,239,227,.12)" font-family="sans-serif" letter-spacing="1">KAZAKHSTAN</text>
+        <text x="228" y="116" text-anchor="middle" font-size="5" fill="rgba(245,239,227,.12)" font-family="sans-serif">KYRGYZ.</text>
+        <text x="158" y="130" text-anchor="middle" font-size="5" fill="rgba(245,239,227,.12)" font-family="sans-serif">UZBEK.</text>
+        <text x="100" y="168" text-anchor="middle" font-size="5" fill="rgba(245,239,227,.12)" font-family="sans-serif">TURKM.</text>
+        <text x="247" y="152" text-anchor="middle" font-size="4.5" fill="rgba(245,239,227,.1)" font-family="sans-serif">TAJIK.</text>
+        <polyline points="200,90 215,82 230,88 245,80 260,88" fill="none" stroke="rgba(200,144,30,.1)" stroke-width="1.5" stroke-linecap="round"/>
+        <g class="city-pin-group" onclick="openCity('cholpon')">
+          <circle cx="228" cy="102" r="18" fill="rgba(200,144,30,.06)" class="city-pulse"/>
+          <circle cx="228" cy="102" r="11" fill="rgba(200,144,30,.16)" stroke="rgba(232,172,58,.55)" stroke-width="1.2"/>
+          <circle cx="228" cy="102" r="5" fill="#E8AC3A" filter="url(#glow)"/>
+          <text x="228" y="87" text-anchor="middle" font-size="7" fill="#E8AC3A" font-family="sans-serif" font-weight="bold">Cholpon-Ata</text>
+          <line x1="228" y1="91" x2="228" y2="97" stroke="rgba(232,172,58,.45)" stroke-width=".8"/>
+        </g>
+        <g class="city-pin-group locked"><circle cx="200" cy="97" r="4.5" fill="rgba(245,239,227,.08)" stroke="rgba(245,239,227,.18)" stroke-width=".9"/><text x="200" y="88" text-anchor="middle" font-size="6" fill="rgba(245,239,227,.18)" font-family="sans-serif">Bishkek 🔒</text></g>
+        <g class="city-pin-group locked"><circle cx="258" cy="88" r="4.5" fill="rgba(245,239,227,.08)" stroke="rgba(245,239,227,.18)" stroke-width=".9"/><text x="260" y="79" text-anchor="middle" font-size="6" fill="rgba(245,239,227,.18)" font-family="sans-serif">Almaty 🔒</text></g>
+        <g class="city-pin-group locked"><circle cx="165" cy="118" r="4.5" fill="rgba(245,239,227,.08)" stroke="rgba(245,239,227,.18)" stroke-width=".9"/><text x="155" y="109" text-anchor="middle" font-size="6" fill="rgba(245,239,227,.18)" font-family="sans-serif">Tashkent 🔒</text></g>
+        <g class="city-pin-group locked"><circle cx="148" cy="140" r="4.5" fill="rgba(245,239,227,.08)" stroke="rgba(245,239,227,.18)" stroke-width=".9"/><text x="138" y="131" text-anchor="middle" font-size="6" fill="rgba(245,239,227,.18)" font-family="sans-serif">Samarkand 🔒</text></g>
+        <g class="city-pin-group locked"><circle cx="222" cy="138" r="4.5" fill="rgba(245,239,227,.08)" stroke="rgba(245,239,227,.18)" stroke-width=".9"/><text x="234" y="130" text-anchor="middle" font-size="6" fill="rgba(245,239,227,.18)" font-family="sans-serif">Osh 🔒</text></g>
+        <g transform="translate(372,26)"><circle r="13" fill="rgba(26,14,4,.7)" stroke="rgba(200,144,30,.2)" stroke-width="1"/><text y="-4" text-anchor="middle" font-size="6" fill="rgba(200,144,30,.6)" font-family="sans-serif">N</text><text y="9" text-anchor="middle" font-size="6" fill="rgba(245,239,227,.2)" font-family="sans-serif">S</text><line x1="0" y1="-9" x2="0" y2="9" stroke="rgba(200,144,30,.22)" stroke-width=".7"/></g>
+        <circle cx="14" cy="258" r="4" fill="#E8AC3A"/><text x="22" y="262" font-size="7" fill="rgba(245,239,227,.4)" font-family="sans-serif">Open</text>
+        <circle cx="62" cy="258" r="4" fill="rgba(245,239,227,.12)" stroke="rgba(245,239,227,.25)" stroke-width=".8"/><text x="70" y="262" font-size="7" fill="rgba(245,239,227,.25)" font-family="sans-serif">Coming soon</text>
+      </svg>
+    </div>
+    <div class="search-bar-wrap"><div class="search-bar"><span>🔍</span><input type="text" id="map-search" placeholder="Search cities, countries..." oninput="filterCities(this.value)"></div></div>
+    <div class="city-list"><div class="city-list-hdr">All Cities</div><div id="cities-list-el"></div></div>
+  </div>
+  <div id="tab-journey" class="tab-page">
+    <div class="j-back" onclick="goTab('map')">← Map</div>
+    <div class="j-hero">
+      <div class="j-em" id="j-em">🏖️</div>
+      <div class="j-city-name" id="j-name">Cholpon-Ata</div>
+      <div class="j-xp-line">Earned <strong id="j-xp-e">0</strong> of <strong id="j-xp-t">445</strong> XP</div>
+      <div class="j-prog-wrap"><div class="j-prog-track"><div class="j-prog-fill" id="j-pfill" style="width:0%"></div></div><div class="j-prog-txt" id="j-ptxt">0% complete</div></div>
+    </div>
+    <div id="journey-content"></div>
+  </div>
+  <div id="tab-feed" class="tab-page">
+    <div class="feed-top"><div class="feed-title">Travelers</div><div style="font-size:20px;cursor:pointer;color:var(--gold)" onclick="openModal('post-modal')">✏️</div></div>
+    <div class="search-bar-wrap"><div class="search-bar"><span>🔍</span><input type="text" id="feed-search" placeholder="Search by name or @nickname..." oninput="filterFeed(this.value)"></div></div>
+    <div class="stories-row" id="stories-row"></div>
+    <div class="write-bar">
+      <div class="write-av" id="feed-av">🧕</div>
+      <div class="write-ph" onclick="openModal('post-modal')">Share your adventure...</div>
+      <button class="write-btn" onclick="openModal('post-modal')">📷 Photo</button>
+    </div>
+    <div id="feed-list"></div>
+  </div>
+  <div id="tab-profile" class="tab-page">
+    <div class="prof-hdr">
+      <div class="prof-top">
+        <div class="prof-av-wrap">
+          <div class="prof-av" id="prof-av">🧕</div>
+          <div class="prof-lvl-dot" id="prof-lvl-dot">NOVICE</div>
+        </div>
+        <div>
+          <div class="prof-name" id="prof-name">Traveler</div>
+          <div class="prof-handle" id="prof-handle">@traveler</div>
+          <div class="prof-title" id="prof-ttl">Beginning Explorer</div>
+          <div class="prof-bio" id="prof-bio">🌍</div>
+        </div>
+      </div>
+      <div class="prof-stats">
+        <div class="pstat"><div class="pstat-n" id="ps-xp">0</div><div class="pstat-l">XP</div></div>
+        <div class="pstat"><div class="pstat-n" id="ps-places">0</div><div class="pstat-l">Places</div></div>
+        <div class="pstat"><div class="pstat-n" id="ps-countries">0</div><div class="pstat-l">Countries</div></div>
+      </div>
+    </div>
+    <div class="xp-card" onclick="openLevelModal()" style="cursor:pointer">
+      <div class="xp-top"><span class="xp-lbl">Level Progress</span><span class="xp-v" id="xp-v">0 / 500 XP</span></div>
+      <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+      <div class="xp-nxt" id="xp-nxt">Next level: 500 XP</div>
+      <div style="font-size:10px;color:var(--muted2);margin-top:6px;text-align:right">Tap to see all levels →</div>
+    </div>
+    <div class="countries-section">
+      <div class="cs-header"><div class="cs-title">Countries</div><div class="cs-count" id="cs-count">0 of 6 visited</div></div>
+      <div class="countries-grid" id="countries-grid"></div>
+    </div>
+    <div class="grid-tabs">
+      <div class="grid-tab active" id="gtab-grid" onclick="switchGridTab('grid')">⊞</div>
+      <div class="grid-tab" id="gtab-list" onclick="switchGridTab('list')">☰</div>
+    </div>
+    <div id="photo-grid-wrap"><div class="photo-grid" id="photo-grid"></div></div>
+    <div id="visited-list-wrap" style="display:none;padding:0 16px"><div id="visited-list"></div></div>
+    <div style="padding:16px"><button class="btn-secondary" onclick="doLogout()">Sign Out</button></div>
+  </div>
+  <div id="tab-tips" class="tab-page">
+    <div class="tips-hero">
+      <div class="tips-hero-label">Local Insider Tips</div>
+      <div class="tips-hero-title">Only locals know this</div>
+      <div class="city-tabs">
+        <button class="city-tab-btn active" onclick="switchCityTab('cholpon',this)">🏖️ Cholpon-Ata</button>
+        <button class="city-tab-btn" onclick="switchCityTab('bishkek',this)">🏙️ Bishkek</button>
+        <button class="city-tab-btn" onclick="switchCityTab('osh',this)">🕌 Osh</button>
+        <button class="city-tab-btn" onclick="switchCityTab('almaty',this)">🍎 Almaty</button>
+        <button class="city-tab-btn" onclick="switchCityTab('tashkent',this)">🌸 Tashkent</button>
+        <button class="city-tab-btn" onclick="switchCityTab('samarkand',this)">🏛️ Samarkand</button>
+      </div>
+    </div>
+    <div class="search-bar-wrap"><div class="search-bar"><span>🔍</span><input type="text" id="tips-search" placeholder="Search tips, restaurants, places..." oninput="filterTips(this.value)"></div></div>
+    <div class="tips-body" id="tips-city-content"></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="bnav-btn active" id="bnav-map" onclick="goTab('map')"><span class="bni">🗺️</span><span>Map</span></button>
+    <button class="bnav-btn" id="bnav-journey" onclick="goTab('journey')" style="display:none"><span class="bni">🎯</span><span>Quests</span></button>
+    <button class="bnav-btn" id="bnav-tips" onclick="goTab('tips')"><span class="bni">💡</span><span>Tips</span></button>
+    <button class="bnav-btn" id="bnav-feed" onclick="goTab('feed')"><span class="bni">📸</span><span>Feed</span></button>
+    <button class="bnav-btn" id="bnav-profile" onclick="goTab('profile')"><span class="bni">👤</span><span>Profile</span></button>
+  </div>
+</div>
+<div class="modal-ov" id="proof-modal">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="pm-title">Quest Proof</div>
+    <div class="modal-sub" id="pm-sub">Upload a photo as proof of completion</div>
+    <div class="proof-photo-area" id="proof-photo-area" onclick="triggerProofUpload()">
+      <div class="proof-photo-hint">📷</div>
+      <div class="proof-photo-txt">Tap to add proof photo</div>
+      <button class="proof-photo-change" id="proof-change-btn" onclick="event.stopPropagation();triggerProofUpload()">Change</button>
+    </div>
+    <input type="file" id="proof-file" accept="image/*" style="display:none" onchange="onProofPhotoSelected(this)">
+    <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Photo Visibility</div>
+    <div class="vis-toggle">
+      <div class="vis-opt sel" id="vis-public" onclick="selectVis('public')"><div class="vis-opt-ico">🌍</div><div class="vis-opt-ttl">Public</div><div class="vis-opt-sub">Visible in feed &amp; profile</div></div>
+      <div class="vis-opt" id="vis-private" onclick="selectVis('private')"><div class="vis-opt-ico">🔒</div><div class="vis-opt-ttl">Private</div><div class="vis-opt-sub">Only you can see it</div></div>
+    </div>
+    <button class="btn-primary" id="pm-complete-btn" onclick="submitProof()">✓ Mark Complete!</button>
+    <button class="btn-secondary" onclick="closeModal('proof-modal')">Cancel</button>
+  </div>
+</div>
+<div class="modal-ov" id="challenge-modal">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="cm-title">Quest</div>
+    <div class="modal-sub" id="cm-sub">Description</div>
+    <div id="cm-rew" style="display:none">
+      <div class="rew-banner" style="margin-bottom:14px">
+        <div class="rb-em" id="cm-rem">🎁</div>
+        <div class="rb-txt"><div class="rb-ttl">Reward</div><div class="rb-desc" id="cm-rdesc">—</div></div>
+        <div class="rb-xp" id="cm-rxp">+0 XP</div>
+      </div>
+    </div>
+    <div id="cm-tips"></div>
+    <button class="btn-primary" id="cm-btn" onclick="openProofModal()" style="margin-top:14px">📷 Upload Proof Photo</button>
+    <button class="btn-secondary" onclick="closeModal('challenge-modal')">Close</button>
+  </div>
+</div>
+<div class="modal-ov" id="post-modal">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-title">New Post</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Photo goes to your profile and country folder automatically</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div class="form-group" style="margin:0"><label class="form-label">🌍 Country</label>
+        <select class="form-input" id="post-country" onchange="onCountrySelect(this.value)" style="cursor:pointer;background:#fff">
+          <option value="">— select —</option>
+          <option value="Kyrgyzstan">🇰🇬 Kyrgyzstan</option>
+          <option value="Kazakhstan">🇰🇿 Kazakhstan</option>
+          <option value="Uzbekistan">🇺🇿 Uzbekistan</option>
+          <option value="Tajikistan">🇹🇯 Tajikistan</option>
+          <option value="Turkmenistan">🇹🇲 Turkmenistan</option>
+          <option value="Other">🌍 Other</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0"><label class="form-label">🏙️ City</label>
+        <input class="form-input" id="post-city-inp" type="text" placeholder="City..." oninput="onCityInput(this.value)" autocomplete="off">
+        <div class="city-suggestions" id="city-sugg-box"></div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">📍 Place (optional)</label>
+      <input class="form-input" id="post-place" type="text" placeholder="Ruh Ordo, Yacht Club..." oninput="onPlaceInput(this.value)" autocomplete="off">
+      <div class="city-suggestions" id="place-suggestions"></div>
+    </div>
+    <div class="form-group"><label class="form-label">📷 Photo</label>
+      <div class="compose-photo-area" id="compose-photo-area" onclick="triggerPhotoUpload()">
+        <div class="compose-photo-hint">📷</div>
+        <div class="compose-photo-txt">Tap to add photo</div>
+        <div class="compose-label-preview" id="compose-label-preview" style="display:none">
+          <div class="clp-city" id="clp-city-name">—</div>
+          <div class="clp-country" id="clp-country-name">—</div>
+        </div>
+        <button class="compose-photo-change" id="compose-change-btn" onclick="event.stopPropagation();triggerPhotoUpload()">Change</button>
+      </div>
+      <input type="file" id="compose-file" accept="image/*" style="display:none" onchange="onPhotoSelected(this)">
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Visibility</div>
+    <div class="vis-toggle">
+      <div class="vis-opt sel" id="post-vis-public" onclick="selectPostVis('public')"><div class="vis-opt-ico">🌍</div><div class="vis-opt-ttl">Public</div><div class="vis-opt-sub">Everyone sees it</div></div>
+      <div class="vis-opt" id="post-vis-private" onclick="selectPostVis('private')"><div class="vis-opt-ico">🔒</div><div class="vis-opt-ttl">Private</div><div class="vis-opt-sub">Only you</div></div>
+    </div>
+    <textarea id="post-txt" rows="2" placeholder="Tell your story... (optional)"></textarea>
+    <button class="btn-primary" onclick="submitPost()">Publish</button>
+    <button class="btn-secondary" onclick="closeModal('post-modal');resetCompose()">Cancel</button>
+  </div>
+</div>
+<div class="modal-ov" id="country-modal">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="country-modal-flag" id="cmd-flag">🇰🇬</div>
+    <div class="modal-title" id="cmd-title">Kyrgyzstan</div>
+    <div class="modal-sub" id="cmd-sub">Central Asia</div>
+    <div id="cmd-cities"></div>
+    <button class="btn-secondary" onclick="closeModal('country-modal')">Close</button>
+  </div>
+</div>
+<div class="cel-ov" id="celebration">
+  <div class="cel-box">
+    <span class="cel-em" id="cel-em">🎉</span>
+    <div class="cel-ttl" id="cel-ttl">Quest Complete!</div>
+    <div class="cel-txt" id="cel-txt">Well done, nomad!</div>
+    <button class="cel-close" onclick="closeCel()">Awesome! 🏔️</button>
+  </div>
+</div>
+<script>
+const LEVELS=[
+  {min:0,    badge:'HOMEBODY',       emoji:'🌱', title:'Just getting started',        minXP:0,    minCountries:0},
+  {min:200,  badge:'BACKPACKER',     emoji:'🎒', title:'First steps into the world',  minXP:200,  minCountries:0},
+  {min:500,  badge:'EXPLORER',       emoji:'🗺️', title:'Curiosity is your compass',   minXP:500,  minCountries:0},
+  {min:1000, badge:'WANDERER',       emoji:'🧭', title:'Always on the move',          minXP:1000, minCountries:0},
+  {min:2000, badge:'NOMAD',          emoji:'⛺', title:'The road is home',            minXP:2000, minCountries:0},
+  {min:4000, badge:'ADVENTURER',     emoji:'🏔️', title:'Fear nothing, explore all',   minXP:4000, minCountries:0},
+  {min:7000, badge:'FREE SPIRIT',    emoji:'🦅', title:'Borders cannot hold you',     minXP:7000, minCountries:3},
+  {min:12000,badge:'WORLD SEEKER',   emoji:'🌍', title:'The world is your backyard',  minXP:12000,minCountries:8},
+  {min:20000,badge:'LEGEND',         emoji:'👑', title:'A name known everywhere',     minXP:20000,minCountries:15},
+  {min:30000,badge:'GLOBAL CITIZEN', emoji:'🌟', title:'You belong to the whole world',minXP:30000,minCountries:30},
+];
+const COUNTRIES=[{id:'kg',name:'Kyrgyzstan',flag:'🇰🇬',region:'Central Asia',cities:['cholpon','bishkek','osh']},{id:'kz',name:'Kazakhstan',flag:'🇰🇿',region:'Central Asia',cities:['almaty']},{id:'uz',name:'Uzbekistan',flag:'🇺🇿',region:'Central Asia',cities:['tashkent','samarkand']},{id:'tj',name:'Tajikistan',flag:'🇹🇯',region:'Central Asia',cities:[]},{id:'tm',name:'Turkmenistan',flag:'🇹🇲',region:'Central Asia',cities:[]},{id:'af',name:'Afghanistan',flag:'🇦🇫',region:'Central Asia',cities:[]}];
+const ALL_PLACES=[{name:'Ruh Ordo',city:'Cholpon-Ata',country:'Kyrgyzstan',flag:'🇰🇬',em:'🕌'},{name:'Petroglyphs',city:'Cholpon-Ata',country:'Kyrgyzstan',flag:'🇰🇬',em:'🪨'},{name:'Yacht Club',city:'Cholpon-Ata',country:'Kyrgyzstan',flag:'🇰🇬',em:'⛵'},{name:'Issyk-Kul Shore',city:'Cholpon-Ata',country:'Kyrgyzstan',flag:'🇰🇬',em:'🏖️'},{name:'Zheti Kazan',city:'Cholpon-Ata',country:'Kyrgyzstan',flag:'🇰🇬',em:'🍲'},{name:'Termal SPA',city:'Kara-Oy',country:'Kyrgyzstan',flag:'🇰🇬',em:'♨️'},{name:'Akbermet Springs',city:'Kara-Oy',country:'Kyrgyzstan',flag:'🇰🇬',em:'♨️'},{name:'Shashlik Park',city:'Cholpon-Ata',country:'Kyrgyzstan',flag:'🇰🇬',em:'🍢'},{name:'Ethno Shop',city:'Cholpon-Ata',country:'Kyrgyzstan',flag:'🇰🇬',em:'🛍️'},{name:'Presidential Park',city:'Cholpon-Ata',country:'Kyrgyzstan',flag:'🇰🇬',em:'🌿'},{name:'Bosteri Market',city:'Bosteri',country:'Kyrgyzstan',flag:'🇰🇬',em:'🧺'},{name:'History Museum',city:'Cholpon-Ata',country:'Kyrgyzstan',flag:'🇰🇬',em:'🏛️'}];
+const CITIES_DATA=[{id:'cholpon',name:'Cholpon-Ata',emoji:'🏖️',country:'Kyrgyzstan · Issyk-Kul',countryId:'kg',locked:false,days:[{num:1,title:'Taste the City',challenges:[{id:'shoro',icon:'🥤',name:'Try Shoro drinks',xp:20,desc:'Find women in red headdresses. Try Maksym, Chalap and Zharma — fermented grain drinks.',tips:['Glass: 20–40 KGS','Look in the mornings on main streets','Maksym is bitter, Zharma is softer'],rew:null},{id:'ruh',icon:'🕌',name:'Visit Ruh Ordo',xp:40,desc:'Spiritual center on Issyk-Kul shore. 5 chapels of different religions — a symbol of unity.',tips:['Open 09:00–17:00','Entry 500–1000 KGS','15–20 min walk from center'],rew:null},{id:'lagman',icon:'🍜',name:'Lunch — lagman or trout',xp:25,desc:"Hand-pulled lagman or fresh trout at U Rybaka restaurant.",tips:['Lagman: 200–350 KGS',"Trout at U Rybaka — freshest you'll find!"],rewEmoji:'☕',rew:'Free coffee at Kofe da Yeda — show screen'},{id:'yacht',icon:'⛵',name:'Boat ride on Issyk-Kul',xp:50,desc:'The lake from the water is a completely different experience.',tips:['From 500 KGS/person','Book ahead in peak season'],rew:null},{id:'sunset',icon:'🚶',name:'Sunset walk on the shore',xp:15,desc:'Bike and pedestrian path along the shore. Mountains turn pink, water darkens to indigo.',tips:['Cool in evening — bring jacket','Apply mosquito repellent'],rew:null},{id:'ethno',icon:'🛍️',name:'Buy a souvenir at Ethno',xp:20,desc:'Best souvenir prices and currency exchange rate in the city.',tips:['Cheapest in town','Best exchange rate inside!'],rewEmoji:'🎁',rew:'10% discount at Ethno Shop — show screen'}]},{num:2,title:'History & Air',challenges:[{id:'petro',icon:'🪨',name:'Petroglyphs Museum',xp:40,desc:'2000+ rock drawings, 2000–3000 years old.',tips:['Go before 11:00!','Water and hat — mandatory','No shade at all'],rew:null},{id:'shash',icon:'🍢',name:'Shashlik at Shashlik Park',xp:25,desc:'Lamb on charcoal — serious business. Fresh bread from the tandoor.',tips:['350–600 KGS'],rew:null},{id:'horse',icon:'🐎',name:'Horse riding',xp:50,desc:'Behind Shashlik Park. No experience needed.',tips:['500–1200 KGS/hour','Negotiate price upfront'],rew:null},{id:'park',icon:'🌿',name:'Presidential Park',xp:20,desc:'The main evening promenade.',tips:['Better in the evening'],rew:null}]},{num:3,title:'Culture & Farewell',challenges:[{id:'museum',icon:'🏛️',name:'History Museum',xp:35,desc:'Saka culture artifacts, Silk Road coins.',tips:['Hire a guide'],rew:null},{id:'bmark',icon:'🧺',name:'Bosteri Market',xp:30,desc:'A lively market — weekends only!',tips:['Weekends only!','Bus #101 or #107'],rew:null},{id:'zheti',icon:'🍲',name:'Dinner at Zheti Kazan',xp:30,desc:'National Kyrgyz cuisine in ethno-interior.',tips:['400–700 KGS/person'],rew:null},{id:'springs',icon:'♨️',name:'Hot Springs',xp:45,desc:'Termal, Akbermet or Eurasia — mineral pools.',tips:['Entry 400–800 KGS','Bring swimsuit and towel!'],rewEmoji:'♨️',rew:'Discount at Termal SPA — show screen'}]}]},{id:'bishkek',name:'Bishkek',emoji:'🏙️',country:'Kyrgyzstan',countryId:'kg',locked:true,days:[]},{id:'almaty',name:'Almaty',emoji:'🍎',country:'Kazakhstan',countryId:'kz',locked:true,days:[]},{id:'tashkent',name:'Tashkent',emoji:'🌸',country:'Uzbekistan',countryId:'uz',locked:true,days:[]},{id:'samarkand',name:'Samarkand',emoji:'🏛️',country:'Uzbekistan',countryId:'uz',locked:true,days:[]},{id:'osh',name:'Osh',emoji:'🕌',country:'Kyrgyzstan',countryId:'kg',locked:true,days:[]}];
+const SAMPLE_PHOTOS=['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=70','https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=70','https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=70','https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=70','https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=70'];
+const SEED_POSTS=[{user:'Timur B.',av:'🧔',lvl:'NOMAD',time:'2h ago',loc:'Hot Springs',city:'Kara-Oy',country:'Kyrgyzstan',achIco:'🐎',achXP:'+50 XP',txt:'Akbermet after horse riding — magical 😅',photo:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=70',likes:12,liked:false,isPrivate:false},{user:'Dasha K.',av:'👩‍🦰',lvl:'WANDERER',time:'5h ago',loc:'Yacht Club',city:'Cholpon-Ata',country:'Kyrgyzstan',achIco:'⛵',achXP:'+50 XP',txt:'Yacht Club at sunset — pure joy 🌅',photo:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=70',likes:8,liked:false,isPrivate:false},{user:'Zhenis A.',av:'🧑',lvl:'LEGEND',time:'1d ago',loc:'U Rakhima',city:'Cholpon-Ata',country:'Kyrgyzstan',achIco:'🍜',achXP:'+25 XP',txt:'Best ashlyamfu in the city 😄',photo:'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=70',likes:31,liked:false,isPrivate:false},{user:'Alina M.',av:'👩',lvl:'NOMAD',time:'2d ago',loc:'Ruh Ordo',city:'Cholpon-Ata',country:'Kyrgyzstan',achIco:'🕌',achXP:'+40 XP',txt:'Five chapels, lake view 🏔️',photo:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=70',likes:24,liked:false,isPrivate:false}];
+const CITY_TIPS={cholpon:{name:'Cholpon-Ata',emoji:'🏖️',locked:false,sections:[
+  {id:'contacts',em:'📞',title:'Taxi, Delivery & More',items:[
+    {t:'Yandex Go',tx:'App · card payment · from 100 KGS city rides.'},
+    {t:'KÖL Taxi · 177',tx:'Call: 177 · WhatsApp: +996 559 177978 · 24/7.'},
+    {t:'Airport transfer & long trips',tx:'Trusted driver, 15+ years experience: +996 705 507 532 (WhatsApp).'},
+    {t:'Kub — food delivery',tx:'Sushi, pizza, rolls · Tel: +996 555 125-125 · 10:00–01:00 · kub.kg'},
+    {t:'Yandex Food',tx:'App — check delivery zone coverage.'},
+    {t:'Aiai Flowers — flower delivery',tx:'Sovetskaya St. 28, Cholpon-Ata · search on Google Maps.'},
+    {t:'Termal SPA',tx:'Aitmatova Ave 6a/1 · 10:00–22:00 · 7 pools · Entry 400–800 KGS.'},
+    {t:'Akbermet Hot Springs',tx:'Kara-Oy village · +996 501 772233 · +996 555 441615 · Book ahead.'},
+    {t:'Eurasia Hot Springs',tx:'Kara-Oy village · +996 550 183300 · +996 705 183300 · 8 pools +15 to +50°C.'},
+    {t:'Pharmacy Neman-Farm · Sovetskaya 221/1',tx:'08:00–22:00'},
+    {t:'Pharmacy Neman-Farm · Sovetskaya 66',tx:'08:00–22:00'},
+    {t:'Pharmacy · Sovetskaya 70',tx:'09:00–21:00'},
+    {t:'Pharmacy · Sovetskaya 74',tx:'09:00–21:00'},
+    {t:'Pharmacy · Aitmatova Ave 4',tx:'09:00–21:00'},
+  ]},
+  {id:'food',em:'🍽️',title:'Where to Eat',items:null,food:[
+    {em:'🐟',name:'U Rybaka',price:'Trout: 500–900 KGS',desc:"Fish straight from Issyk-Kul. Order the trout — nowhere fresher. Proper sit-down café.",tag:'Fish · Café'},
+    {em:'🍜',name:'U Rakhima · Dungan',price:'Mid-range',desc:'Lagman reportedly best in town. Must-try: ashlyamfu (cold noodle dish, perfect in summer) and samsa. Large portions, sometimes a queue — a good sign.',tag:'Dungan · Lagman'},
+    {em:'🍜',name:'Lagmankhanye',price:'200–350 KGS',desc:'Right next to Ruh Ordo. Hand-pulled noodles, rich broth, fresh vegetables and meat. Simple and excellent.',tag:'Lagman · Budget'},
+    {em:'🍲',name:'Zheti Kazan',price:'400–700 KGS/person',desc:'Seven Cauldrons. Traditional Kyrgyz cuisine in a great ethno interior: beshbarmak, kuurdaq, shorpo.',tag:'Kyrgyz · Ethno'},
+    {em:'🍢',name:'Shashlik Park',price:'350–600 KGS',desc:'Lamb slow-grilled over coals. Order with fresh tandoor flatbread while hot.',tag:'Grill · Meat'},
+    {em:'🏡',name:'Cafe Dolinka',price:'Mid-range',desc:'Cosy café with a home-like feel.',tag:'Local · Cosy'},
+    {em:'🍕',name:'Imperiya Pizzy',price:'Mid-range',desc:'Pizza, sushi, rolls. Good when you need a break from local food or travelling with kids.',tag:'Pizza · Sushi'},
+    {em:'🍔',name:'Kunjut · fast food',price:'Budget · town centre',desc:'Decent fast food. Skip the sushi — order something else.',tag:'Fast food · Budget'},
+    {em:'☕',name:'Kofe da Yeda',price:'Mid-range',desc:'Great coffee — the main reason to stop here. Good for breakfast.',tag:'Coffee · Breakfast'},
+    {em:'🥐',name:'Kulikovsky',price:'Pastry & coffee',desc:'Excellent pastries. Coffee is decent, though Bishkek branches do it better.',tag:'Pastry · Coffee'},
+    {em:'🧋',name:'HiTea',price:'Mid-range',desc:'Bubble tea and artisan lemonades. Great to take along the waterfront walk.',tag:'Drinks · Bubble Tea'},
+  ]},
+  {id:'hacks',em:'💡',title:'Life Hacks',items:[
+    {t:'Currency exchange — Ethno Shop only',tx:"Inside Ethno Shop is the best rate in the city. Don't exchange elsewhere — you will lose money."},
+    {t:'Cash and small bills always',tx:'Cards not accepted everywhere. Vendors often have no change for large bills. Exchange early.'},
+    {t:'Minibuses — cheap and fast',tx:'To Bosteri market: minibus with sign "Cholpon-Ata — PMK — Bosteri". City taxi from 100 KGS via Yandex Go app.'},
+    {t:'SIM card immediately on arrival',tx:'Buy MegaCom or Beeline — cheap internet, no roaming. Sold at any store.'},
+    {t:'Petroglyphs — only before 11:00',tx:'No shade at all, sun is merciless. Water and hat mandatory. After 11 is unbearable.'},
+    {t:'Evening by the lake is cool',tx:"Even in July after sunset it gets fresh. Bring a light jacket for the promenade."},
+    {t:'Sunscreen is mandatory',tx:'Altitude 1600m — UV stronger than sea level. Sun feels mild but burns suddenly.'},
+    {t:'No tap water',tx:'Buy 5-liter bottles. Very cheap, sold everywhere.'},
+    {t:'Mosquitoes in the evening',tx:'Apply repellent before sunset walks along the water.'},
+    {t:'Check depth before jumping off a pier',tx:'Some piers are shallow — jumping blind is dangerous.'},
+    {t:'Seasonal fruits by the road',tx:'Watermelons, apricots, cherries — cheapest and tastiest right here, roadside.'},
+    {t:'Best season: June–August',tx:'May and September quieter and cheaper. Peak: July. Issyk-Kul never freezes — even in winter.'},
+    {t:'Bargain — but gently',tx:'Light tone and a smile work better than pressure.'},
+    {t:'Cheapest groceries',tx:'Warehouses behind Barashek restaurant — locals shop here. Also supermarkets Globus, Asia, Barashek.'},
+    {t:'Cheapest fish & dairy',tx:'Bosteri Market — weekends only, come early. Freshest trout, kurut, ayran, kaimak straight from village women.'},
+    {t:'Souvenirs from 50 KGS',tx:'Ethno Shop — cheapest in town. Shyrdaks, jewellery, leather goods, ornaments. Two tasks one stop: buy souvenirs + exchange currency.'},
+    {t:'Forgot your swimsuit?',tx:'There is a good swimwear & lingerie shop right in the town centre — search "купальники Чолпон-Ата" on Google Maps.'},
+    {t:'Good meat for BBQ',tx:'Myasnoy Dvor — locals especially love the lyulya marinade. Tel: +996 705 507 532'},
+  ]},
+  {id:'springs',em:'♨️',title:'Hot Springs',items:[
+    {t:'Termal SPA',tx:'Aitmatova Ave 6a/1 · 10:00–22:00 · 7 pools · Entry 400–800 KGS.'},
+    {t:'Akbermet',tx:'Kara-Oy village · +996 501 772233 · Book ahead.'},
+    {t:'Eurasia',tx:'Kara-Oy village · +996 550 183300 · 8 pools from +15 to +50°C.'},
+    {t:'What is it?',tx:'Mineral thermal water from wells over 1500m deep. Chloride-sodium, therapeutic. Helps with joints, nervous system, skin.'},
+    {t:'Pro tip',tx:'After a full day on your feet — best thing you can do for your body. Bring swimwear and a towel.'},
+  ]},
+]},bishkek:{name:'Bishkek',locked:true,emoji:'🏙️',comingSoon:'Bishkek tips coming soon!'},osh:{name:'Osh',locked:true,emoji:'🕌',comingSoon:'Osh tips coming soon!'},almaty:{name:'Almaty',locked:true,emoji:'🍎',comingSoon:'Almaty tips coming soon!'},tashkent:{name:'Tashkent',locked:true,emoji:'🌸',comingSoon:'Tashkent tips coming soon!'},samarkand:{name:'Samarkand',locked:true,emoji:'🏛️',comingSoon:'Samarkand tips coming soon!'}};
+const EMPTY_STATE=()=>({user:null,done:[],proofs:{},xp:0,posts:[...SEED_POSTS],currentCity:null,activeCh:null,proofPhoto:null,proofVis:'public',composePhoto:null,composeCountry:'',composeCity:'',composePlaceObj:null,postVis:'public'});
+let S=EMPTY_STATE();
+const avSel={in:'🧕',up:'🧕'};
+let activeCityTab='cholpon';
+const openSections={};
+function switchCityTab(id,btn){activeCityTab=id;document.querySelectorAll('.city-tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCityTips(id);}
+function renderCityTips(id){
+  const el=document.getElementById('tips-city-content');if(!el)return;
+  const city=CITY_TIPS[id];if(!city){el.innerHTML='';return;}
+  if(city.locked){el.innerHTML=`<div class="city-coming-soon"><div class="ccs-em">${city.emoji}</div><div class="ccs-title">${city.name}</div><div class="ccs-text">${city.comingSoon}</div></div>`;return;}
+  el.innerHTML=city.sections.map(sec=>{
+    const key=id+'_'+sec.id;const isOpen=!!openSections[key];
+    let body='';
+    if(sec.food){body=sec.food.map(f=>`<div class="food-card"><div class="fc-em">${f.em}</div><div><div class="fc-name">${f.name}</div><div class="fc-price">${f.price}</div><div class="fc-desc">${f.desc}</div><span class="fc-tag">${f.tag}</span></div></div>`).join('');}
+    else{body=(sec.items||[]).map((h,i)=>`<div class="hack-item"><div class="hi-num">${i+1}</div><div><div class="hi-title">${h.t}</div><div class="hi-text">${h.tx}</div></div></div>`).join('');}
+    const cnt=sec.food?sec.food.length:(sec.items||[]).length;
+    return`<div class="tips-section"><div class="tips-sec-hdr" onclick="toggleTipSec('${key}',this)"><div class="tsh-left"><div class="tsh-em">${sec.em}</div><div><div class="tsh-title">${sec.title}</div><div class="tsh-count">${cnt} ${sec.food?'places':'tips'}</div></div></div><div class="tsh-arrow ${isOpen?'open':''}">▼</div></div><div class="tips-sec-body ${isOpen?'open':''}">${body}</div></div>`;
+  }).join('');
+}
+function toggleTipSec(key,hdr){openSections[key]=!openSections[key];hdr.nextElementSibling.classList.toggle('open',openSections[key]);hdr.querySelector('.tsh-arrow').classList.toggle('open',openSections[key]);}
+function renderTips(){renderCityTips(activeCityTab);}
+const KEYS=['gc5_user','gc5_done','gc5_proofs','gc5_xp','gc5_posts'];
+function store(key,val){const v=typeof val==='string'?val:JSON.stringify(val);try{localStorage.setItem(key,v);}catch(e){}try{sessionStorage.setItem(key,v);}catch(e){}}
+function retrieve(key){try{const v=localStorage.getItem(key);if(v!==null)return v;}catch(e){}try{const v=sessionStorage.getItem(key);if(v!==null)return v;}catch(e){}return null;}
+function saveState(){if(!S.user)return;store('gc5_user',S.user);store('gc5_done',S.done);store('gc5_proofs',S.proofs);store('gc5_xp',String(S.xp));store('gc5_posts',S.posts.filter(p=>p.isOwn));}
+function loadState(){try{const u=retrieve('gc5_user');if(!u)return false;const user=JSON.parse(u);if(!user||!user.name)return false;S.user=user;S.done=JSON.parse(retrieve('gc5_done')||'[]');S.proofs=JSON.parse(retrieve('gc5_proofs')||'{}');S.xp=parseInt(retrieve('gc5_xp')||'0')||0;const own=JSON.parse(retrieve('gc5_posts')||'[]');S.posts=[...own,...SEED_POSTS];return true;}catch(e){return false;}}
+function clearState(){KEYS.forEach(k=>{try{localStorage.removeItem(k);}catch(e){}try{sessionStorage.removeItem(k);}catch(e){}});}
+function switchAuthTab(t){['in','up'].forEach(x=>{document.getElementById(`atab-${x}`).classList.toggle('active',x===t);document.getElementById(`aform-${x}`).style.display=x===t?'':'none';});}
+function pickAv(f,el){document.querySelectorAll(`#${f}-av .av-opt`).forEach(e=>e.classList.remove('sel'));el.classList.add('sel');avSel[f]=el.dataset.av;}
+function doLogin(){const nick=document.getElementById('in-nick').value.trim().replace('@','')||'traveler';const name=document.getElementById('in-name').value.trim()||nick;startSession({name,nick:'@'+nick,av:avSel['in'],city:'',country:''});}
+function doRegister(){const nick=document.getElementById('up-nick').value.trim().replace('@','')||'traveler';const fname=document.getElementById('up-fname').value.trim();const lname=document.getElementById('up-lname').value.trim();const country=document.getElementById('up-country').value;const name=(fname+' '+lname).trim()||nick;startSession({name,nick:'@'+nick,av:avSel['up'],city:'',country});}
+function demoLogin(){startSession({name:'Aigerim',nick:'@aigerim',av:'🧕',city:'Bishkek',country:'🇰🇬 Kyrgyzstan'});}
+function startSession(user){S.user=user;saveState();showApp();}
+function showApp(){document.getElementById('screen-auth').classList.remove('active');document.getElementById('screen-app').classList.add('active');updateUI();renderCities();renderFeed();renderStories();if(document.getElementById('prof-av'))renderProfile();if(document.getElementById('tips-city-content'))renderTips();}
+function doLogout(){clearState();S=EMPTY_STATE();document.getElementById('screen-app').classList.remove('active');document.getElementById('screen-auth').classList.add('active');goTab('map');}
+window.addEventListener('DOMContentLoaded',()=>{if(loadState())showApp();});
+function setLang(l){document.getElementById('lang-ru').classList.toggle('active',l==='ru');document.getElementById('lang-en').classList.toggle('active',l==='en');}
+function goTab(t){['map','journey','feed','tips','profile'].forEach(x=>{const tab=document.getElementById(`tab-${x}`);if(tab)tab.classList.toggle('active',x===t);const b=document.getElementById(`bnav-${x}`);if(b)b.classList.toggle('active',x===t);});window.scrollTo({top:0,behavior:'smooth'});if(t==='profile')renderProfile();if(t==='tips')renderTips();}
+function getCityProg(city){let tot=0,done=0,xp=0,txp=0;(city.days||[]).forEach(d=>d.challenges.forEach(c=>{tot++;txp+=c.xp;if(S.done.includes(c.id)){done++;xp+=c.xp;}}));return{done,tot,xp,txp,pct:tot?(done/tot)*100:0};}
+function renderCities(){const el=document.getElementById('cities-list-el');el.innerHTML=CITIES_DATA.map(city=>{const p=getCityProg(city);const pct=Math.round(p.pct);const badge=city.locked?`<span class="cr-badge b-lock">Soon 🔒</span>`:pct===100?`<span class="cr-badge b-done">✓ Done</span>`:`<span class="cr-badge b-open">Open</span>`;return`<div class="city-row ${city.locked?'locked':''} ${city.id==='cholpon'?'current':''}" onclick="${city.locked?'':` openCity('${city.id}')`}"><div class="cr-em">${city.emoji}</div><div class="cr-info"><div class="cr-name">${city.name}</div><div class="cr-country">${city.country}</div>${!city.locked?`<div class="cr-prog"><div class="cr-bar"><div class="cr-fill" style="width:${pct}%"></div></div><div class="cr-txt">${p.done}/${p.tot} quests · ${p.xp} XP</div></div>`:''}</div>${badge}</div>`;}).join('');}
+function openCity(id){S.currentCity=CITIES_DATA.find(c=>c.id===id);renderJourney();goTab('journey');document.getElementById('bnav-journey').style.display='';}
+function renderJourney(){
+  const city=S.currentCity;if(!city)return;
+  const p=getCityProg(city);
+  document.getElementById('j-em').textContent=city.emoji;
+  document.getElementById('j-name').textContent=city.name;
+  document.getElementById('j-xp-e').textContent=p.xp;
+  document.getElementById('j-xp-t').textContent=p.txp;
+  document.getElementById('j-pfill').style.width=p.pct+'%';
+  document.getElementById('j-ptxt').textContent=Math.round(p.pct)+'% complete';
+  let html='';
+  city.days.forEach((day,di)=>{
+    const prevOk=di===0||isDayDone(city.days[di-1]);const lk=!prevOk;
+    html+=`<div class="day-sec"><div class="day-hdr"><div class="day-dot ${lk?'lk':''}">${day.num}</div><div><div class="day-ttl">Day ${day.num}: ${day.title}</div><div class="day-sub">${day.challenges.length} quests · ${day.challenges.reduce((a,c)=>a+c.xp,0)} XP</div></div></div>`;
+    if(lk){html+=`<div class="day-locked-bar">🔒 Complete all Day ${day.num-1} quests to unlock</div>`;}
+    else{
+      day.challenges.forEach(ch=>{
+        const done=S.done.includes(ch.id);const proof=S.proofs[ch.id];
+        let proofBadge='';
+        if(proof){proofBadge=proof.vis==='public'?`<div class="ch-proof-badge">📷 Proof · Public</div>`:`<div class="ch-proof-badge private">🔒 Proof · Private</div>`;}
+        html+=`<div class="ch-card ${done?'done':''}" onclick="openCh('${ch.id}')"><div class="ch-ico-box">${ch.icon}</div><div class="ch-body"><div class="ch-name">${ch.name}</div><div class="ch-desc">${ch.desc.slice(0,72)}...</div>${ch.rew?`<div class="ch-rew">🎁 Has reward!</div>`:''}${proofBadge}</div><div class="ch-right"><span class="ch-xp">+${ch.xp} XP</span><div class="ch-check">${done?'✓':''}</div></div></div>`;
+      });
+      if(isDayDone(day))html+=`<div class="rew-banner"><div class="rb-em">🏅</div><div class="rb-txt"><div class="rb-ttl">Day ${day.num} complete!</div><div class="rb-desc">${day.title}</div></div><div class="rb-xp">Day ✓</div></div>`;
+    }
+    html+='</div>';
+    if(di<city.days.length-1)html+='<div class="sep"></div>';
+  });
+  const hacks=CITY_TIPS.cholpon.sections.find(s=>s.id==='hacks');
+  const topHacks=hacks?hacks.items.slice(0,7):[];
+  html+=`<div class="hacks-toggle" onclick="toggleHacks(this)"><div class="ht-left"><div class="ht-icon">💡</div><div><div class="ht-title">Local Life Hacks</div><div class="ht-sub">${topHacks.length} tips from locals</div></div></div><div class="ht-arrow">▼</div></div><div class="hacks-body" id="hacks-body">${topHacks.map(h=>`<div class="hb-item"><div class="hb-em">💡</div><div class="hb-text"><strong>${h.t}</strong><br>${h.tx}</div></div>`).join('')}<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--cream3)"><button onclick="goTab('tips')" style="width:100%;padding:10px;background:var(--goldfade);border:1px solid var(--goldline);color:var(--gold);border-radius:10px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer">All tips & restaurants → Tips tab 💡</button></div></div><div style="height:16px"></div>`;
+  document.getElementById('journey-content').innerHTML=html;
+}
+function toggleHacks(t){const b=document.getElementById('hacks-body');const a=t.querySelector('.ht-arrow');const open=b.classList.toggle('open');a.classList.toggle('open',open);}
+function isDayDone(day){return day.challenges.every(c=>S.done.includes(c.id));}
+function openCh(id){
+  const city=S.currentCity;let ch=null;
+  city.days.forEach(d=>d.challenges.forEach(c=>{if(c.id===id)ch=c;}));
+  if(!ch)return;S.activeCh=id;
+  document.getElementById('cm-title').textContent=ch.name;
+  document.getElementById('cm-sub').textContent=ch.desc;
+  const rb=document.getElementById('cm-rew');
+  if(ch.rew){rb.style.display='';document.getElementById('cm-rem').textContent=ch.rewEmoji||'🎁';document.getElementById('cm-rdesc').textContent=ch.rew;document.getElementById('cm-rxp').textContent=`+${ch.xp} XP`;}else rb.style.display='none';
+  document.getElementById('cm-tips').innerHTML=(ch.tips||[]).map(t=>`<div class="tip-row"><span class="tip-icon">💡</span><span>${t}</span></div>`).join('');
+  const done=S.done.includes(id);const btn=document.getElementById('cm-btn');
+  btn.textContent=done?'✓ Already complete!':'📷 Upload Proof Photo';btn.disabled=done;btn.style.opacity=done?.55:1;
+  openModal('challenge-modal');
+}
+function openProofModal(){closeModal('challenge-modal');S.proofPhoto=null;S.proofVis='public';selectVis('public');const area=document.getElementById('proof-photo-area');const img=area.querySelector('img');if(img)img.remove();area.querySelector('.proof-photo-hint').style.display='';area.querySelector('.proof-photo-txt').style.display='';document.getElementById('proof-change-btn').style.display='none';document.getElementById('proof-file').value='';const ch=getActiveCh();if(ch){document.getElementById('pm-title').textContent=ch.name;document.getElementById('pm-sub').textContent='Upload a photo as proof · choose visibility';}openModal('proof-modal');}
+function triggerProofUpload(){document.getElementById('proof-file').click();}
+function onProofPhotoSelected(input){if(!input.files[0])return;const reader=new FileReader();reader.onload=e=>{S.proofPhoto=e.target.result;const area=document.getElementById('proof-photo-area');const old=area.querySelector('img');if(old)old.remove();const img=document.createElement('img');img.src=e.target.result;img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';area.insertBefore(img,area.firstChild);area.querySelector('.proof-photo-hint').style.display='none';area.querySelector('.proof-photo-txt').style.display='none';document.getElementById('proof-change-btn').style.display='block';};reader.readAsDataURL(input.files[0]);}
+function selectVis(v){S.proofVis=v;document.getElementById('vis-public').classList.toggle('sel',v==='public');document.getElementById('vis-private').classList.toggle('sel',v==='private');}
+function selectPostVis(v){S.postVis=v;document.getElementById('post-vis-public').classList.toggle('sel',v==='public');document.getElementById('post-vis-private').classList.toggle('sel',v==='private');}
+function getActiveCh(){const city=S.currentCity;if(!city||!S.activeCh)return null;let ch=null;city.days.forEach(d=>d.challenges.forEach(c=>{if(c.id===S.activeCh)ch=c;}));return ch;}
+function submitProof(){
+  const id=S.activeCh;if(!id||S.done.includes(id))return;
+  const city=S.currentCity;const ch=getActiveCh();if(!ch)return;
+  S.proofs[id]={photo:S.proofPhoto,vis:S.proofVis};S.done.push(id);S.xp+=ch.xp;saveState();
+  closeModal('proof-modal');updateUI();renderJourney();renderCities();
+  if(S.proofVis==='public'&&S.proofPhoto){S.posts.unshift({user:S.user.name,av:S.user.av,lvl:getCurLevel().badge,time:'just now',loc:ch.name,city:city.name,country:city.country.split(' · ')[0],achIco:ch.icon,achXP:`+${ch.xp} XP`,txt:`Completed "${ch.name}" in ${city.name}! 🏔️`,photo:S.proofPhoto,likes:0,liked:false,isOwn:true,isPrivate:false});}
+  else if(S.proofPhoto){S.posts.unshift({user:S.user.name,av:S.user.av,lvl:getCurLevel().badge,time:'just now',loc:ch.name,city:city.name,country:city.country.split(' · ')[0],achIco:ch.icon,achXP:`+${ch.xp} XP`,txt:`Completed "${ch.name}"`,photo:S.proofPhoto,likes:0,liked:false,isOwn:true,isPrivate:true});}
+  else{S.posts.unshift({user:S.user.name,av:S.user.av,lvl:getCurLevel().badge,time:'just now',loc:ch.name,city:city.name,country:city.country.split(' · ')[0],achIco:ch.icon,achXP:`+${ch.xp} XP`,txt:`Completed "${ch.name}" in ${city.name}! 🏔️`,photo:SAMPLE_PHOTOS[Math.floor(Math.random()*SAMPLE_PHOTOS.length)],likes:0,liked:false,isOwn:true,isPrivate:false});}
+  saveState();renderFeed();renderProfile();renderStories();
+  document.getElementById('cel-em').textContent=ch.rew?ch.rewEmoji||'🎁':'🎉';
+  document.getElementById('cel-ttl').textContent=ch.rew?'Reward Unlocked!':'Quest Complete!';
+  document.getElementById('cel-txt').textContent=ch.rew?`+${ch.xp} XP earned!\n${ch.rew}`:`+${ch.xp} XP · Keep going, nomad!`;
+  document.getElementById('celebration').classList.add('show');
+}
+function closeCel(){document.getElementById('celebration').classList.remove('show');}
+function renderStories(){const el=document.getElementById('stories-row');const mine=S.user?{name:'You',av:S.user.av,mine:true}:null;const others=[{name:'Timur',av:'🧔',seen:false},{name:'Dasha',av:'👩‍🦰',seen:false},{name:'Zhenis',av:'🧑',seen:true},{name:'Alina',av:'👩',seen:false}];const all=mine?[mine,...others]:others;el.innerHTML=all.map(s=>`<div class="story-item"><div class="story-ring ${s.mine?'mine':s.seen?'seen':''}"><div class="story-inner">${s.av}</div></div><div class="story-name">${s.name}</div></div>`).join('');if(S.user)document.getElementById('feed-av').textContent=S.user.av;}
+function buildPostHtml(p,i){if(p.isPrivate)return'';return`<div class="post-card"><div class="post-hdr"><div class="post-av" style="cursor:pointer" onclick="openUserProfile('${esc(p.user)}','${p.av}','${p.lvl}')">${p.av}</div><div><div><span class="post-uname" style="cursor:pointer" onclick="openUserProfile('${esc(p.user)}','${p.av}','${p.lvl}')">${esc(p.user)}</span><span class="post-lvl">${p.lvl}</span></div><div class="post-loc">📍 ${esc(p.loc||'')}${p.city?', '+esc(p.city):''}</div></div><div class="post-more">···</div></div><div class="post-photo">${p.photo?`<img src="${p.photo}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=post-photo-ph>${p.achIco}</div>'">`:`<div class="post-photo-ph">${p.achIco}</div>`}<div class="photo-city-label"><div><div class="pcl-city">${esc(p.city||p.loc||'')}</div><div class="pcl-country">${esc(p.country||'Kyrgyzstan')}</div></div>${p.achXP?`<div class="pcl-ach"><div class="pcl-ach-ico">${p.achIco}</div><div class="pcl-ach-xp">${p.achXP}</div></div>`:''}</div></div><div class="post-actions"><button class="pact-btn" onclick="toggleLike(${i})">${p.liked?'❤️':'🤍'}</button><button class="pact-btn">💬</button><button class="pact-btn">✈️</button><button class="pact-btn pact-save">🔖</button></div><div class="post-likes">${p.likes} likes</div><div class="post-caption"><span class="post-caption-user">${esc(p.user)}</span><span class="post-caption-text"> ${esc(p.txt)}</span> <span style="color:var(--gold);font-weight:500">#issykkul #kyrgyzstan</span></div><div class="post-time-small">${p.time}</div></div>`;}
+function renderFeed(){const el=document.getElementById('feed-list');if(S.user&&document.getElementById('feed-av'))document.getElementById('feed-av').textContent=S.user.av;if(el)el.innerHTML=S.posts.map((p,i)=>buildPostHtml(p,i)).join('');}
+function toggleLike(i){S.posts[i].liked=!S.posts[i].liked;S.posts[i].likes+=S.posts[i].liked?1:-1;renderFeed();}
+function triggerPhotoUpload(){document.getElementById('compose-file').click();}
+function onPhotoSelected(input){if(!input.files[0])return;const reader=new FileReader();reader.onload=e=>{S.composePhoto=e.target.result;const area=document.getElementById('compose-photo-area');const old=area.querySelector('img');if(old)old.remove();const img=document.createElement('img');img.src=e.target.result;img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';area.insertBefore(img,area.firstChild);area.querySelector('.compose-photo-hint').style.display='none';area.querySelector('.compose-photo-txt').style.display='none';document.getElementById('compose-change-btn').style.display='block';updateComposeLabelPreview();};reader.readAsDataURL(input.files[0]);}
+function onCountrySelect(val){S.composeCountry=val;updateComposeLabelPreview();document.getElementById('post-city-inp').value='';document.getElementById('city-sugg-box').style.display='none';}
+function onCityInput(val){const box=document.getElementById('city-sugg-box');S.composeCity=val;updateComposeLabelPreview();if(!val){box.style.display='none';return;}const matches=ALL_PLACES.filter(p=>p.city.toLowerCase().includes(val.toLowerCase())).map(p=>p.city).filter((v,i,a)=>a.indexOf(v)===i).slice(0,5);if(!matches.length){box.style.display='none';return;}box.style.display='block';box._matches=matches;box.innerHTML=matches.map((c,i)=>`<div class="city-sugg-item" onclick="selectCity(${i})"><div class="city-sugg-em">🏙️</div><div class="city-sugg-name">${esc(c)}</div></div>`).join('');}
+function selectCity(i){const box=document.getElementById('city-sugg-box');S.composeCity=box._matches[i];document.getElementById('post-city-inp').value=box._matches[i];box.style.display='none';updateComposeLabelPreview();}
+function onPlaceInput(val){const box=document.getElementById('place-suggestions');if(!val){box.style.display='none';S.composePlaceObj=null;return;}const matches=ALL_PLACES.filter(p=>p.name.toLowerCase().includes(val.toLowerCase())||p.city.toLowerCase().includes(val.toLowerCase())).slice(0,5);if(!matches.length){box.style.display='none';return;}box.style.display='block';box._matches=matches;box.innerHTML=matches.map((p,i)=>`<div class="city-sugg-item" onclick="selectPlace(${i})"><div class="city-sugg-em">${p.em}</div><div><div class="city-sugg-name">${p.name}</div><div class="city-sugg-country">${p.city} · ${p.country} ${p.flag}</div></div></div>`).join('');}
+function selectPlace(i){const box=document.getElementById('place-suggestions');const pl=box._matches[i];S.composePlaceObj=pl;document.getElementById('post-place').value=`${pl.name}, ${pl.city}`;box.style.display='none';if(!document.getElementById('post-country').value){const sel=document.getElementById('post-country');for(let o of sel.options){if(o.value===pl.country){sel.value=pl.country;S.composeCountry=pl.country;break;}}}if(!document.getElementById('post-city-inp').value){document.getElementById('post-city-inp').value=pl.city;S.composeCity=pl.city;}updateComposeLabelPreview();}
+function updateComposeLabelPreview(){const lp=document.getElementById('compose-label-preview');const city=S.composeCity||S.composePlaceObj?.city||'';const country=S.composeCountry||S.composePlaceObj?.country||'';if(S.composePhoto&&(city||country)){lp.style.display='block';document.getElementById('clp-city-name').textContent=city||country;document.getElementById('clp-country-name').textContent=country!==city?country:'';}else lp.style.display='none';}
+function submitPost(){const txt=document.getElementById('post-txt').value.trim();const country=document.getElementById('post-country').value;const city=document.getElementById('post-city-inp').value.trim();const pl=S.composePlaceObj;const loc=pl?pl.name:(document.getElementById('post-place').value.trim()||city||country||'Journey');if(!country&&!city&&!S.composePhoto&&!txt){document.getElementById('post-country').style.borderColor='var(--red)';setTimeout(()=>document.getElementById('post-country').style.borderColor='',2000);return;}const isPrivate=S.postVis==='private';S.posts.unshift({user:S.user.name,av:S.user.av,lvl:getCurLevel().badge,time:'just now',loc,city:city||pl?.city||country||'',country:country||pl?.country||'Kyrgyzstan',achIco:'📸',achXP:'',txt:txt||`${city||country||'Journey'} 🏔️`,photo:S.composePhoto||null,likes:0,liked:false,isOwn:true,isPrivate});closeModal('post-modal');resetCompose();saveState();renderFeed();renderProfile();renderStories();}
+function resetCompose(){S.composePhoto=null;S.composePlaceObj=null;S.composeCountry='';S.composeCity='';S.postVis='public';['post-txt','post-place','post-city-inp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('post-country').value='';['place-suggestions','city-sugg-box'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});document.getElementById('compose-label-preview').style.display='none';document.getElementById('compose-change-btn').style.display='none';const area=document.getElementById('compose-photo-area');const img=area.querySelector('img');if(img)img.remove();area.querySelector('.compose-photo-hint').style.display='';area.querySelector('.compose-photo-txt').style.display='';document.getElementById('compose-file').value='';selectPostVis('public');}
+function renderCountries(){const grid=document.getElementById('countries-grid');if(!grid)return;const vis=new Set();CITIES_DATA.forEach(city=>{if(getCityProg(city).done>0)vis.add(city.countryId);});const n2id={'Kyrgyzstan':'kg','Kazakhstan':'kz','Uzbekistan':'uz','Tajikistan':'tj','Turkmenistan':'tm','Afghanistan':'af'};S.posts.filter(p=>p.isOwn).forEach(p=>{if(p.country&&n2id[p.country])vis.add(n2id[p.country]);});const csCount=document.getElementById('cs-count');if(csCount)csCount.textContent=`${vis.size} of ${COUNTRIES.length} visited`;const psC=document.getElementById('ps-countries');if(psC)psC.textContent=vis.size;grid.innerHTML=COUNTRIES.map(c=>{const v=vis.has(c.id);const cits=CITIES_DATA.filter(ct=>ct.countryId===c.id);const vc=cits.filter(ct=>getCityProg(ct).done>0).length;const pct=cits.length?Math.round(vc/cits.length*100):0;return`<div class="country-card ${v?'visited':''}" onclick="${v?`openCountryModal('${c.id}')`:''}" ><div class="cc-flag-area">${c.flag}${v?'<div class="cc-vis-tag">✓ VISITED</div>':''}<div class="cc-lock">${v?'':'🔒'}</div></div><div class="cc-info"><div class="cc-name">${c.name}</div><div class="cc-cities">${v?`${vc} cit${vc!==1?'ies':'y'} explored`:'Not visited'}</div>${v&&cits.length?`<div class="cc-prog"><div class="cc-prog-fill" style="width:${pct}%"></div></div>`:''}</div></div>`;}).join('');}
+function openCountryModal(cid){const c=COUNTRIES.find(x=>x.id===cid);if(!c)return;document.getElementById('cmd-flag').textContent=c.flag;document.getElementById('cmd-title').textContent=c.name;document.getElementById('cmd-sub').textContent=c.region;const cits=CITIES_DATA.filter(ct=>ct.countryId===cid);let html='';if(cits.length){html+=`<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Cities</div>`;cits.forEach(city=>{const p=getCityProg(city);const v=p.done>0;html+=`<div class="country-city-item"><div class="cci-photo">${city.emoji}</div><div style="flex:1"><div class="cci-name">${city.name}</div><div class="cci-date">${v?`${p.done}/${p.tot} quests`:'Not visited'}</div></div>${v?`<div class="cci-xp">+${p.xp} XP</div>`:'<div style="font-size:11px;color:var(--muted2)">🔒</div>'}</div>`;});}const photos=S.posts.filter(p=>p.isOwn&&p.country===c.name&&p.photo);if(photos.length){html+=`<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin:14px 0 10px">My Photos from ${c.name}</div>`;html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">${photos.map(p=>`<div style="aspect-ratio:1/1;border-radius:8px;overflow:hidden;background:var(--cream2);position:relative"><img src="${p.photo}" style="width:100%;height:100%;object-fit:cover">${p.isPrivate?'<div style="position:absolute;top:4px;right:4px;font-size:12px;background:rgba(26,14,4,.6);border-radius:5px;padding:2px 4px">🔒</div>':''}<div style="position:absolute;bottom:0;left:0;right:0;padding:10px 5px 4px;background:linear-gradient(transparent,rgba(26,14,4,.72));font-size:8px;font-weight:700;color:#fff">${esc(p.city||p.loc||'')}</div></div>`).join('')}</div>`;}if(!html)html=`<div style="font-size:13px;color:var(--muted);padding:12px 0">No data yet — complete quests or add photos!</div>`;document.getElementById('cmd-cities').innerHTML=html;openModal('country-modal');}
+function renderProfile(){if(!S.user||!document.getElementById('prof-av'))return;const lv=getCurLevel();const nlv=getNextLevel();document.getElementById('prof-av').textContent=S.user.av;document.getElementById('prof-name').textContent=S.user.name;document.getElementById('prof-handle').textContent=S.user.nick||'@traveler';document.getElementById('prof-ttl').textContent=lv.title;document.getElementById('prof-lvl-dot').textContent=lv.badge;document.getElementById('prof-bio').textContent=(S.user.country||'🌍')+' 🏔️';document.getElementById('ps-xp').textContent=S.xp;document.getElementById('ps-places').textContent=S.done.length;const nxp=nlv?nlv.min:lv.min+500;const pct=Math.min(100,((S.xp-lv.min)/(nxp-lv.min))*100);document.getElementById('xp-v').textContent=`${S.xp} / ${nxp} XP`;document.getElementById('xp-fill').style.width=pct+'%';document.getElementById('xp-nxt').textContent=nlv?`Next "${nlv.badge}": ${nxp-S.xp} XP more`:'Maximum level! 🏆';renderCountries();const myPosts=S.posts.filter(p=>p.isOwn&&p.photo);const gridEl=document.getElementById('photo-grid');gridEl.innerHTML=myPosts.length===0?`<div style="grid-column:1/-1;padding:32px;text-align:center"><div style="font-size:36px;margin-bottom:8px">📷</div><div style="font-size:13px;color:var(--muted2)">Photos appear after completing quests or posting</div></div>`:myPosts.map(p=>`<div class="photo-cell"><img src="${p.photo}" loading="lazy">${p.isPrivate?'<div class="photo-cell-lock">🔒</div>':''}<div class="photo-cell-label">${esc(p.city||p.loc||'')}</div></div>`).join('');const allCh=[];CITIES_DATA.forEach(city=>(city.days||[]).forEach(d=>d.challenges.forEach(c=>allCh.push({...c,cityName:city.name}))));const vEl=document.getElementById('visited-list');vEl.innerHTML=S.done.length===0?`<div style="padding:20px 0;font-size:13px;color:var(--muted2)">No completed quests yet</div>`:S.done.map(id=>{const ch=allCh.find(c=>c.id===id);if(!ch)return'';const proof=S.proofs[id];return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--cream3)"><div style="font-size:20px">${ch.icon}</div><div style="flex:1;font-size:13px;font-weight:600;color:var(--ink)">${ch.name}</div>${proof?`<span style="font-size:10px;color:${proof.vis==='public'?'var(--gold)':'var(--muted2)'}">${proof.vis==='public'?'📷 Public':'🔒 Private'}</span>`:''}<div style="font-size:11px;color:var(--gold);font-weight:700">+${ch.xp} XP</div></div>`;}).join('');}
+function switchGridTab(t){document.getElementById('gtab-grid').classList.toggle('active',t==='grid');document.getElementById('gtab-list').classList.toggle('active',t==='list');document.getElementById('photo-grid-wrap').style.display=t==='grid'?'':'none';document.getElementById('visited-list-wrap').style.display=t==='list'?'':'none';}
+function getCurLevel(){let l=LEVELS[0];for(const x of LEVELS){if(S.xp>=x.min)l=x;}return l;}
+function getNextLevel(){for(const x of LEVELS){if(S.xp<x.min)return x;}return null;}
+function updateUI(){if(!S.user)return;document.getElementById('top-xp').textContent=`⚡ ${S.xp} XP`;document.getElementById('top-av').textContent=S.user.av;}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+document.querySelectorAll('.modal-ov').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el){el.classList.remove('open');if(el.id==='post-modal')resetCompose();}});});
+
+function filterCities(q){
+  q=q.toLowerCase().trim();
+  const el=document.getElementById('cities-list-el');
+  const rows=el.querySelectorAll('.city-row');
+  let any=false;
+  rows.forEach(r=>{
+    const text=r.textContent.toLowerCase();
+    const show=!q||text.includes(q);
+    r.style.display=show?'':'none';
+    if(show)any=true;
+  });
+  let nr=el.querySelector('.search-no-results');
+  if(!any&&q){if(!nr){nr=document.createElement('div');nr.className='search-no-results';el.appendChild(nr);}nr.textContent='Nothing found for "'+q+'"';}
+  else if(nr)nr.remove();
+}
+
+function filterTips(q){
+  q=q.toLowerCase().trim();
+  const el=document.getElementById('tips-city-content');
+  if(!el)return;
+  const sections=el.querySelectorAll('.tips-section');
+  sections.forEach(sec=>{
+    const items=sec.querySelectorAll('.hack-item,.food-card');
+    let anyItem=false;
+    items.forEach(item=>{
+      const show=!q||item.textContent.toLowerCase().includes(q);
+      item.style.display=show?'':'none';
+      if(show)anyItem=true;
+    });
+    sec.style.display=(!q||anyItem)?'':'none';
+    if(anyItem&&q){
+      const body=sec.querySelector('.tips-sec-body');
+      if(body)body.classList.add('open');
+      const arrow=sec.querySelector('.tsh-arrow');
+      if(arrow)arrow.classList.add('open');
+    }
+  });
+  let nr=el.querySelector('.search-no-results');
+  const anySec=[...sections].some(s=>s.style.display!=='none');
+  if(!anySec&&q){if(!nr){nr=document.createElement('div');nr.className='search-no-results';el.appendChild(nr);}nr.textContent='Nothing found for "'+q+'"';}
+  else if(nr)nr.remove();
+}
+
+function filterFeed(q){
+  q=q.toLowerCase().trim();
+  const el=document.getElementById('feed-list');
+  if(!el)return;
+  const cards=el.querySelectorAll('.post-card');
+  let any=false;
+  cards.forEach(card=>{
+    const text=card.textContent.toLowerCase();
+    const show=!q||text.includes(q);
+    card.style.display=show?'':'none';
+    if(show)any=true;
+  });
+  let nr=el.querySelector('.search-no-results');
+  if(!any&&q){if(!nr){nr=document.createElement('div');nr.className='search-no-results';el.appendChild(nr);}nr.textContent='No travelers found for "'+q+'"';}
+  else if(nr)nr.remove();
+}
+
+function openUserProfile(name, av, lvl) {
+  document.getElementById('um-av').textContent = av;
+  document.getElementById('um-name').textContent = name;
+  document.getElementById('um-lvl').textContent = lvl;
+  // Show their public posts
+  const posts = S.posts.filter(p => !p.isPrivate && esc(p.user) === name);
+  const el = document.getElementById('um-posts');
+  if (posts.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:20px 0;font-size:13px;color:var(--muted2)">No public posts yet</div>';
+  } else {
+    el.innerHTML = '<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Posts</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">'
+      + posts.map(p => p.photo
+          ? `<div style="aspect-ratio:1/1;border-radius:8px;overflow:hidden;background:var(--cream2)"><img src="${p.photo}" style="width:100%;height:100%;object-fit:cover"></div>`
+          : `<div style="aspect-ratio:1/1;border-radius:8px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:28px">${p.achIco}</div>`
+        ).join('')
+      + '</div>';
+  }
+  openModal('user-modal');
+}
+
+function getCurLevel(){
+  const countries = getVisitedCountriesCount();
+  let l = LEVELS[0];
+  for(const x of LEVELS){
+    if(S.xp >= x.minXP && countries >= x.minCountries) l = x;
+  }
+  return l;
+}
+function getNextLevel(){
+  const countries = getVisitedCountriesCount();
+  const cur = getCurLevel();
+  const idx = LEVELS.indexOf(cur);
+  if(idx < LEVELS.length - 1) return LEVELS[idx + 1];
+  return null;
+}
+function getVisitedCountriesCount(){
+  const vis = new Set();
+  CITIES_DATA.forEach(city => { if(getCityProg(city).done > 0) vis.add(city.countryId); });
+  const n2id = {'Kyrgyzstan':'kg','Kazakhstan':'kz','Uzbekistan':'uz','Tajikistan':'tj','Turkmenistan':'tm','Afghanistan':'af'};
+  S.posts.filter(p => p.isOwn).forEach(p => { if(p.country && n2id[p.country]) vis.add(n2id[p.country]); });
+  return vis.size;
+}
+function openLevelModal(){
+  const cur = getCurLevel();
+  const countries = getVisitedCountriesCount();
+  document.getElementById('lm-sub').textContent = 'You are ' + cur.emoji + ' ' + cur.badge;
+  const list = document.getElementById('lm-list');
+  list.innerHTML = LEVELS.map((lv, i) => {
+    const isCur = lv.badge === cur.badge;
+    const isDone = S.xp >= lv.minXP && countries >= lv.minCountries;
+    const isNext = !isDone && LEVELS.slice(0,i).every(l => S.xp >= l.minXP && countries >= l.minCountries);
+    let status = '';
+    let xpLeft = '', ctrLeft = '';
+    if(isDone){
+      status = 'done';
+    } else {
+      if(S.xp < lv.minXP) xpLeft = (lv.minXP - S.xp) + ' XP';
+      if(countries < lv.minCountries) ctrLeft = (lv.minCountries - countries) + ' countries';
+      status = isCur ? 'current' : (isNext ? 'next' : 'locked');
+    }
+    const needs = [xpLeft, ctrLeft].filter(Boolean).join(' + ');
+    return `<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--cream3);opacity:${isDone||isCur?1:0.55}">
+      <div style="font-size:24px;flex-shrink:0">${lv.emoji}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:${isCur?'var(--gold)':isDone?'var(--green)':'var(--ink)'}">${lv.badge}</div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:1px">${lv.title}</div>
+        ${lv.minCountries>0?`<div style="font-size:10px;color:var(--muted2);margin-top:2px">🌍 ${lv.minCountries} countries · ⚡ ${lv.minXP.toLocaleString()} XP</div>`:`<div style="font-size:10px;color:var(--muted2);margin-top:2px">⚡ ${lv.minXP.toLocaleString()} XP</div>`}
+      </div>
+      <div style="flex-shrink:0;text-align:right">
+        ${isCur ? `<span style="font-size:10px;font-weight:700;color:var(--gold);background:var(--goldfade);border:1px solid var(--bcard);border-radius:8px;padding:3px 8px">YOU ARE HERE</span>` :
+          isDone ? `<span style="font-size:16px">✅</span>` :
+          needs ? `<span style="font-size:10px;color:var(--muted2)">${needs} left</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  openModal('level-modal');
+}
+</script>
+
+<div class="modal-ov" id="user-modal">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="width:72px;height:72px;border-radius:50%;background:var(--shell);border:3px solid var(--gold2);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 10px;box-shadow:0 4px 20px rgba(200,144,30,.3)" id="um-av">🧔</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--ink)" id="um-name">Traveler</div>
+      <div style="display:inline-block;margin-top:6px;font-size:10px;font-weight:700;color:var(--gold);background:var(--goldfade);border:1px solid var(--bcard);border-radius:10px;padding:3px 10px" id="um-lvl">NOMAD</div>
+    </div>
+    <div id="um-posts" style="margin-top:4px"></div>
+    <button class="btn-secondary" onclick="closeModal('user-modal')">Close</button>
+  </div>
+</div>
+
+<div class="modal-ov" id="level-modal">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Your Path</div>
+    <div class="modal-sub" id="lm-sub">Track your journey to Global Citizen</div>
+    <div id="lm-list"></div>
+    <button class="btn-secondary" onclick="closeModal('level-modal')">Close</button>
+  </div>
+</div>
+</body>
+</html>
